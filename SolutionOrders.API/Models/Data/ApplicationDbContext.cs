@@ -125,14 +125,14 @@ namespace SolutionOrders.API.Models.Data
 
             // Client
             modelBuilder.Entity<Client>().HasData(
-                new Client { IdClient = 1, Name = "Jan Kowalski", Adress = "ul. Główna 1, Warszawa", PhoneNumber = "500-100-200", IsActive = true },
-                new Client { IdClient = 2, Name = "Anna Nowak", Adress = "ul. Kwiatowa 5, Kraków", PhoneNumber = "600-200-300", IsActive = true }
+                new Client { IdClient = 1, Name = "Jan Kowalski", Address = "ul. Główna 1, Warszawa", PhoneNumber = "500-100-200", IsActive = true },
+                new Client { IdClient = 2, Name = "Anna Nowak", Address = "ul. Kwiatowa 5, Kraków", PhoneNumber = "600-200-300", IsActive = true }
             );
 
             // Worker
             modelBuilder.Entity<Worker>().HasData(
-                new Worker { IdWorker = 1, FirstName = "Piotr", LastName = "Kowalczyk", Login = "pkowalczyk", Password = "haslo123", IsActive = true },
-                new Worker { IdWorker = 2, FirstName = "Maria", LastName = "Wiśniewska", Login = "mwisnieska", Password = "haslo456", IsActive = true }
+                new Worker { IdWorker = 1, FirstName = "Piotr", LastName = "Kowalczyk", Login = "pkowalczyk", IsActive = true },
+                new Worker { IdWorker = 2, FirstName = "Maria", LastName = "Wiśniewska", Login = "mwisnieska", IsActive = true }
             );
 
             // Item

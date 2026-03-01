@@ -20,7 +20,7 @@ const Greeting: React.FC<GreetingProps> = ({
         Cześć, {name}!
       </Text>
       
-      {age && (
+      {age !== undefined && (
         <Text style={styles.age}>
           Masz {age} lat
         </Text>

@@ -68,7 +68,7 @@ namespace SolutionOrders.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdClient"));
 
-                    b.Property<string>("Adress")
+                    b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -88,7 +88,7 @@ namespace SolutionOrders.API.Migrations
                         new
                         {
                             IdClient = 1,
-                            Adress = "ul. Główna 1, Warszawa",
+                            Address = "ul. Główna 1, Warszawa",
                             IsActive = true,
                             Name = "Jan Kowalski",
                             PhoneNumber = "500-100-200"
@@ -96,7 +96,7 @@ namespace SolutionOrders.API.Migrations
                         new
                         {
                             IdClient = 2,
-                            Adress = "ul. Kwiatowa 5, Kraków",
+                            Address = "ul. Kwiatowa 5, Kraków",
                             IsActive = true,
                             Name = "Anna Nowak",
                             PhoneNumber = "600-200-300"
@@ -300,9 +300,6 @@ namespace SolutionOrders.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("IdWorker");
 
                     b.ToTable("Workers");
@@ -314,8 +311,7 @@ namespace SolutionOrders.API.Migrations
                             FirstName = "Piotr",
                             IsActive = true,
                             LastName = "Kowalczyk",
-                            Login = "pkowalczyk",
-                            Password = "haslo123"
+                            Login = "pkowalczyk"
                         },
                         new
                         {
@@ -323,8 +319,7 @@ namespace SolutionOrders.API.Migrations
                             FirstName = "Maria",
                             IsActive = true,
                             LastName = "Wiśniewska",
-                            Login = "mwisnieska",
-                            Password = "haslo456"
+                            Login = "mwisnieska"
                         });
                 });
 
