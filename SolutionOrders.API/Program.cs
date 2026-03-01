@@ -1,6 +1,7 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using SolutionOrders.API.Features.Items.Providers;
+using SolutionOrders.API.Features.Items.Services;
 using SolutionOrders.API.Models.Data;
 using System.Reflection;
 
@@ -26,6 +27,7 @@ namespace SolutionOrders.API
             builder.Services.AddScoped<IItemProvider, ItemProvider>();
 
             // Add services to the container.
+            builder.Services.AddScoped<IItemService, ItemService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
