@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: SolutionOrders.API/Dockerfile
-    container_name: solutionorders-api
+    container_name: pmab2026zaoczki-api
     ports:
       - "5000:8080"
     environment:
@@ -22,7 +22,7 @@ services:
     container_name: PMAB2026Zaoczki-sqlserver
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=YourStrong@Password123
+      - SA_PASSWORD=YourStrong!Passw0rd
       - MSSQL_PID=Developer
     ports:
       - "1433:1433"
@@ -31,7 +31,7 @@ services:
     networks:
       - dev-network
     healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -C -U sa -P YourStrong@Password123 -Q "SELECT 1" -b -o /dev/null
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -C -U sa -P YourStrong!Passw0rd -Q "SELECT 1" -b -o /dev/null
       interval: 5s
       timeout: 10s
       retries: 10
