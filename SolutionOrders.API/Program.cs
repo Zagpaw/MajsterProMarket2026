@@ -52,7 +52,7 @@ namespace SolutionOrders.API
 
         private static void RegisterProviders(WebApplicationBuilder builder)
         {
-            builder.Services.AddTransient<IItemProvider, IItemProvider>();
+            builder.Services.AddTransient<IItemProvider, ItemProvider>();
         }
 
         private static void SetUpCorsPolicy(WebApplicationBuilder builder)
