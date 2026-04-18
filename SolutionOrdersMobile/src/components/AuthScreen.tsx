@@ -149,8 +149,6 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
         {mode === 'login' ? (
           <>
             <Text style={styles.title}>Zaloguj sie</Text>
-            <Text style={styles.hint}>Admin: pawel / haslo.123</Text>
-            <Text style={styles.hint}>Klient: telefon podany przy rejestracji / haslo</Text>
 
             <Text style={styles.label}>Login admina albo telefon klienta</Text>
             <TextInput
