@@ -58,6 +58,7 @@ namespace SolutionOrders.API.Controllers
             existingClient.Name = client.Name;
             existingClient.Address = client.Address;
             existingClient.PhoneNumber = client.PhoneNumber;
+            existingClient.Password = client.Password;
             existingClient.IsActive = client.IsActive;
 
             await context.SaveChangesAsync(cancellationToken);

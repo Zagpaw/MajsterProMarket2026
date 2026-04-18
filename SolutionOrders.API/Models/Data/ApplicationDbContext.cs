@@ -48,6 +48,7 @@ namespace SolutionOrders.API.Models.Data
             {
                 entity.HasKey(e => e.IdWorker);
                 entity.Property(e => e.Login).IsRequired();
+                entity.Property(e => e.Password).IsRequired();
                 entity.Property(e => e.IsActive).IsRequired();
             });
 
@@ -161,14 +162,14 @@ namespace SolutionOrders.API.Models.Data
 
             // Client
             modelBuilder.Entity<Client>().HasData(
-                new Client { IdClient = 1, Name = "Ekipa Remontowa Alfa", Address = "ul. Murarska 12, Warszawa", PhoneNumber = "500-100-200", IsActive = true },
-                new Client { IdClient = 2, Name = "Dom i Ogród Nowak", Address = "ul. Ogrodowa 5, Kraków", PhoneNumber = "600-200-300", IsActive = true }
+                new Client { IdClient = 1, Name = "Ekipa Remontowa Alfa", Address = "ul. Murarska 12, Warszawa", PhoneNumber = "500-100-200", Password = "klient.123", IsActive = true },
+                new Client { IdClient = 2, Name = "Dom i Ogród Nowak", Address = "ul. Ogrodowa 5, Kraków", PhoneNumber = "600-200-300", Password = "dom.123", IsActive = true }
             );
 
             // Worker
             modelBuilder.Entity<Worker>().HasData(
-                new Worker { IdWorker = 1, FirstName = "Tomasz", LastName = "Maj", Login = "tmaj", IsActive = true },
-                new Worker { IdWorker = 2, FirstName = "Karolina", LastName = "Bruk", Login = "kbruk", IsActive = true }
+                new Worker { IdWorker = 1, FirstName = "Paweł", LastName = "Administrator", Login = "pawel", Password = "haslo.123", IsActive = true },
+                new Worker { IdWorker = 2, FirstName = "Karolina", LastName = "Bruk", Login = "kbruk", Password = "pracownik.123", IsActive = true }
             );
 
             modelBuilder.Entity<Supplier>().HasData(

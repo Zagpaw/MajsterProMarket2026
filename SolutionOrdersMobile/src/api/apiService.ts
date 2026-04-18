@@ -216,6 +216,19 @@ class ApiService {
     });
   }
 
+  async updateClient(id: number, data: Partial<Client>): Promise<void> {
+    return this.request<void>(`/Client/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ ...data, idClient: id }),
+    });
+  }
+
+  async deleteClient(id: number): Promise<void> {
+    return this.request<void>(`/Client/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // ========== PRACOWNICY ==========
 
   async getWorkers(): Promise<Worker[]> {
@@ -226,6 +239,19 @@ class ApiService {
     return this.request<{ id: number }>('/Worker', {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  }
+
+  async updateWorker(id: number, data: Partial<Worker>): Promise<void> {
+    return this.request<void>(`/Worker/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ ...data, idWorker: id }),
+    });
+  }
+
+  async deleteWorker(id: number): Promise<void> {
+    return this.request<void>(`/Worker/${id}`, {
+      method: 'DELETE',
     });
   }
 

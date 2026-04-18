@@ -20,6 +20,7 @@ export interface Client {
   name: string | null;
   address: string | null;
   phoneNumber: string | null;
+  password: string | null;
   isActive: boolean;
 }
 
@@ -30,7 +31,7 @@ export interface Worker {
   lastName: string | null;
   isActive: boolean;
   login: string;
-  password?: string;
+  password: string | null;
 }
 
 // Dostawca

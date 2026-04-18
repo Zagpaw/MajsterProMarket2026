@@ -59,6 +59,7 @@ namespace SolutionOrders.API.Controllers
             existingWorker.FirstName = worker.FirstName;
             existingWorker.LastName = worker.LastName;
             existingWorker.Login = worker.Login;
+            existingWorker.Password = worker.Password;
             existingWorker.IsActive = worker.IsActive;
 
             await context.SaveChangesAsync(cancellationToken);
