@@ -1,10 +1,10 @@
 import { Platform } from 'react-native';
 
-const DEV_API_HOST = '192.168.1.119';
+const DEV_API_HOST = 'localhost';
 
 const getBaseUrl = (): string => {
   if (__DEV__) {
-    // Docker/API dziala na komputerze, wiec telefon/emulator potrzebuje adresu IP komputera.
+    // adb reverse mapuje port 5000 emulatora na API dzialajace na komputerze.
     if (Platform.OS === 'android' || Platform.OS === 'ios') {
       return `http://${DEV_API_HOST}:5000/api`;
     }
