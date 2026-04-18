@@ -18,6 +18,9 @@ namespace SolutionOrders.API.Features.Items.Providers
             var query = _context.Items
                 .Include(i => i.Category)
                 .Include(i => i.UnitOfMeasurement)
+                .Include(i => i.Supplier)
+                .Include(i => i.Brand)
+                .Include(i => i.Warehouse)
                 .Where(i => i.IsActive);
 
             if (AsNoTracking)
@@ -35,6 +38,9 @@ namespace SolutionOrders.API.Features.Items.Providers
             var query = _context.Items
                .Include(i => i.Category)
                .Include(i => i.UnitOfMeasurement)
+               .Include(i => i.Supplier)
+               .Include(i => i.Brand)
+               .Include(i => i.Warehouse)
                .Where(i => i.IsActive);
 
             if (asNoTracking)

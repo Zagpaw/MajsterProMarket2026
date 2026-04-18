@@ -5,6 +5,9 @@ import type {
   Category,
   Client,
   Worker,
+  Supplier,
+  Brand,
+  Warehouse,
   Item,
   CreateItemRequest,
   UpdateItemRequest,
@@ -73,20 +76,51 @@ class ApiService {
     }
   }
 
+  async getEntityList<T>(endpoint: string): Promise<T[]> {
+    return this.request<T[]>(endpoint);
+  }
+
+  async createEntity<TRequest, TResponse = unknown>(
+    endpoint: string,
+    data: TRequest
+  ): Promise<TResponse> {
+    return this.request<TResponse>(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateEntity<TRequest>(
+    endpoint: string,
+    id: number,
+    data: TRequest
+  ): Promise<void> {
+    return this.request<void>(`${endpoint}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteEntity(endpoint: string, id: number): Promise<void> {
+    return this.request<void>(`${endpoint}/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // ========== JEDNOSTKI MIARY ==========
 
   async getUnitOfMeasurements(): Promise<UnitOfMeasurement[]> {
-    return this.request<UnitOfMeasurement[]>('/UnitOfMeasurements');
+    return this.request<UnitOfMeasurement[]>('/UnitOfMeasurement');
   }
 
   async getUnitOfMeasurement(id: number): Promise<UnitOfMeasurement> {
-    return this.request<UnitOfMeasurement>(`/UnitOfMeasurements/${id}`);
+    return this.request<UnitOfMeasurement>(`/UnitOfMeasurement/${id}`);
   }
 
   async createUnitOfMeasurement(
     data: Omit<UnitOfMeasurement, 'idUnitOfMeasurement'>
   ): Promise<{ id: number }> {
-    return this.request<{ id: number }>('/UnitOfMeasurements', {
+    return this.request<{ id: number }>('/UnitOfMeasurement', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -96,14 +130,14 @@ class ApiService {
     id: number,
     data: Partial<UnitOfMeasurement>
   ): Promise<void> {
-    return this.request<void>(`/UnitOfMeasurements/${id}`, {
+    return this.request<void>(`/UnitOfMeasurement/${id}`, {
       method: 'PUT',
       body: JSON.stringify({ ...data, idUnitOfMeasurement: id }),
     });
   }
 
   async deleteUnitOfMeasurement(id: number): Promise<void> {
-    return this.request<void>(`/UnitOfMeasurements/${id}`, {
+    return this.request<void>(`/UnitOfMeasurement/${id}`, {
       method: 'DELETE',
     });
   }
@@ -111,13 +145,13 @@ class ApiService {
   // ========== KATEGORIE ==========
 
   async getCategories(): Promise<Category[]> {
-    return this.request<Category[]>('/Categories');
+    return this.request<Category[]>('/Category');
   }
 
   async createCategory(
     data: Omit<Category, 'idCategory'>
   ): Promise<{ id: number }> {
-    return this.request<{ id: number }>('/Categories', {
+    return this.request<{ id: number }>('/Category', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -127,14 +161,14 @@ class ApiService {
     id: number,
     data: Partial<Category>
   ): Promise<void> {
-    return this.request<void>(`/Categories/${id}`, {
+    return this.request<void>(`/Category/${id}`, {
       method: 'PUT',
       body: JSON.stringify({ ...data, idCategory: id }),
     });
   }
 
   async deleteCategory(id: number): Promise<void> {
-    return this.request<void>(`/Categories/${id}`, {
+    return this.request<void>(`/Category/${id}`, {
       method: 'DELETE',
     });
   }
@@ -192,6 +226,84 @@ class ApiService {
     return this.request<{ id: number }>('/Worker', {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  }
+
+  // ========== DOSTAWCY ==========
+
+  async getSuppliers(): Promise<Supplier[]> {
+    return this.request<Supplier[]>('/Supplier');
+  }
+
+  async createSupplier(data: Omit<Supplier, 'idSupplier'>): Promise<{ id: number }> {
+    return this.request<{ id: number }>('/Supplier', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateSupplier(id: number, data: Partial<Supplier>): Promise<void> {
+    return this.request<void>(`/Supplier/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ ...data, idSupplier: id }),
+    });
+  }
+
+  async deleteSupplier(id: number): Promise<void> {
+    return this.request<void>(`/Supplier/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // ========== MARKI ==========
+
+  async getBrands(): Promise<Brand[]> {
+    return this.request<Brand[]>('/Brand');
+  }
+
+  async createBrand(data: Omit<Brand, 'idBrand'>): Promise<{ id: number }> {
+    return this.request<{ id: number }>('/Brand', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBrand(id: number, data: Partial<Brand>): Promise<void> {
+    return this.request<void>(`/Brand/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ ...data, idBrand: id }),
+    });
+  }
+
+  async deleteBrand(id: number): Promise<void> {
+    return this.request<void>(`/Brand/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // ========== MAGAZYNY ==========
+
+  async getWarehouses(): Promise<Warehouse[]> {
+    return this.request<Warehouse[]>('/Warehouse');
+  }
+
+  async createWarehouse(data: Omit<Warehouse, 'idWarehouse'>): Promise<{ id: number }> {
+    return this.request<{ id: number }>('/Warehouse', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateWarehouse(id: number, data: Partial<Warehouse>): Promise<void> {
+    return this.request<void>(`/Warehouse/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ ...data, idWarehouse: id }),
+    });
+  }
+
+  async deleteWarehouse(id: number): Promise<void> {
+    return this.request<void>(`/Warehouse/${id}`, {
+      method: 'DELETE',
     });
   }
 }

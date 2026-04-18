@@ -12,6 +12,9 @@ namespace SolutionOrders.API.Features.Items.Messages.Commands
         public decimal? Quantity { get; set; }
         public string? FotoUrl { get; set; }
         public int? IdUnitOfMeasurement { get; set; }
+        public int? IdSupplier { get; set; }
+        public int? IdBrand { get; set; }
+        public int? IdWarehouse { get; set; }
         public string? Code { get; set; }
         public bool IsActive { get; set; }
     }

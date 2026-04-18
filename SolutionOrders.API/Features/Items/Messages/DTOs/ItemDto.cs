@@ -11,6 +11,12 @@
         public decimal? Quantity { get; set; }
         public int? IdUnitOfMeasurement { get; set; }
         public string? UnitName { get; set; }
+        public int? IdSupplier { get; set; }
+        public string? SupplierName { get; set; }
+        public int? IdBrand { get; set; }
+        public string? BrandName { get; set; }
+        public int? IdWarehouse { get; set; }
+        public string? WarehouseName { get; set; }
         public string? Code { get; set; }
         public bool IsActive { get; set; }
     }

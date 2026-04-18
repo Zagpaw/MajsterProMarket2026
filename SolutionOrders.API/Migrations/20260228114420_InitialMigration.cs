@@ -170,8 +170,8 @@ namespace SolutionOrders.API.Migrations
                 columns: new[] { "IdCategory", "Description", "IsActive", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Urządzenia elektroniczne", true, "Elektronika" },
-                    { 2, "Produkty spożywcze", true, "Żywność" }
+                    { 1, "Cement, zaprawy i elementy konstrukcyjne", true, "Materiały budowlane" },
+                    { 2, "Narzędzia ręczne, elektronarzędzia i akcesoria", true, "Narzędzia i warsztat" }
                 });
 
             migrationBuilder.InsertData(
@@ -179,8 +179,8 @@ namespace SolutionOrders.API.Migrations
                 columns: new[] { "IdClient", "Address", "IsActive", "Name", "PhoneNumber" },
                 values: new object[,]
                 {
-                    { 1, "ul. Główna 1, Warszawa", true, "Jan Kowalski", "500-100-200" },
-                    { 2, "ul. Kwiatowa 5, Kraków", true, "Anna Nowak", "600-200-300" }
+                    { 1, "ul. Murarska 12, Warszawa", true, "Ekipa Remontowa Alfa", "500-100-200" },
+                    { 2, "ul. Ogrodowa 5, Kraków", true, "Dom i Ogród Nowak", "600-200-300" }
                 });
 
             migrationBuilder.InsertData(
@@ -198,8 +198,8 @@ namespace SolutionOrders.API.Migrations
                 columns: new[] { "IdWorker", "FirstName", "IsActive", "LastName", "Login" },
                 values: new object[,]
                 {
-                    { 1, "Piotr", true, "Kowalczyk", "pkowalczyk" },
-                    { 2, "Maria", true, "Wiśniewska", "mwisnieska" }
+                    { 1, "Tomasz", true, "Maj", "tmaj" },
+                    { 2, "Karolina", true, "Bruk", "kbruk" }
                 });
 
             migrationBuilder.InsertData(
@@ -207,8 +207,8 @@ namespace SolutionOrders.API.Migrations
                 columns: new[] { "IdItem", "Code", "Description", "FotoUrl", "IdCategory", "IdUnitOfMeasurement", "IsActive", "Name", "Price", "Quantity" },
                 values: new object[,]
                 {
-                    { 1, "LAP001", "Laptop Dell Inspiron 15", null, 1, 1, true, "Laptop Dell", 3500m, 10m },
-                    { 2, "MON001", "Monitor 24 cale", null, 1, 1, true, "Monitor Samsung", 800m, 15m }
+                    { 1, "BUD-CEM-25", "Cement do prac murarskich i remontowych", null, 1, 2, true, "Cement uniwersalny 25 kg", 29m, 120m },
+                    { 2, "NAR-WIE-850", "Wiertarka do betonu, cegły i drewna", null, 2, 1, true, "Wiertarka udarowa 850 W", 249m, 18m }
                 });
 
             migrationBuilder.CreateIndex(

@@ -4,6 +4,7 @@ using SolutionOrders.API.Features.Items.Providers;
 using SolutionOrders.API.Features.Items.Services;
 using SolutionOrders.API.Models.Data;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace SolutionOrders.API
 {
@@ -28,7 +29,11 @@ namespace SolutionOrders.API
 
         private static void RegisterControllersAndOpenApi(WebApplicationBuilder builder)
         {
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                });
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
         }

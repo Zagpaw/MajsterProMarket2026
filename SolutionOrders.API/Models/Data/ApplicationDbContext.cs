@@ -13,6 +13,9 @@ namespace SolutionOrders.API.Models.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Worker> Workers { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Brand> Brands { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
@@ -48,6 +51,24 @@ namespace SolutionOrders.API.Models.Data
                 entity.Property(e => e.IsActive).IsRequired();
             });
 
+            modelBuilder.Entity<Supplier>(entity =>
+            {
+                entity.HasKey(e => e.IdSupplier);
+                entity.Property(e => e.IsActive).IsRequired();
+            });
+
+            modelBuilder.Entity<Brand>(entity =>
+            {
+                entity.HasKey(e => e.IdBrand);
+                entity.Property(e => e.IsActive).IsRequired();
+            });
+
+            modelBuilder.Entity<Warehouse>(entity =>
+            {
+                entity.HasKey(e => e.IdWarehouse);
+                entity.Property(e => e.IsActive).IsRequired();
+            });
+
             // Item
             modelBuilder.Entity<Item>(entity =>
             {
@@ -65,6 +86,21 @@ namespace SolutionOrders.API.Models.Data
                 entity.HasOne(e => e.UnitOfMeasurement)
                     .WithMany(u => u.Items)
                     .HasForeignKey(e => e.IdUnitOfMeasurement)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Supplier)
+                    .WithMany(s => s.Items)
+                    .HasForeignKey(e => e.IdSupplier)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Brand)
+                    .WithMany(b => b.Items)
+                    .HasForeignKey(e => e.IdBrand)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Warehouse)
+                    .WithMany(w => w.Items)
+                    .HasForeignKey(e => e.IdWarehouse)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -119,26 +155,41 @@ namespace SolutionOrders.API.Models.Data
 
             // Category
             modelBuilder.Entity<Category>().HasData(
-                new Category { IdCategory = 1, Name = "Elektronika", Description = "Urządzenia elektroniczne", IsActive = true },
-                new Category { IdCategory = 2, Name = "Żywność", Description = "Produkty spożywcze", IsActive = true }
+                new Category { IdCategory = 1, Name = "Materiały budowlane", Description = "Cement, zaprawy i elementy konstrukcyjne", IsActive = true },
+                new Category { IdCategory = 2, Name = "Narzędzia i warsztat", Description = "Narzędzia ręczne, elektronarzędzia i akcesoria", IsActive = true }
             );
 
             // Client
             modelBuilder.Entity<Client>().HasData(
-                new Client { IdClient = 1, Name = "Jan Kowalski", Address = "ul. Główna 1, Warszawa", PhoneNumber = "500-100-200", IsActive = true },
-                new Client { IdClient = 2, Name = "Anna Nowak", Address = "ul. Kwiatowa 5, Kraków", PhoneNumber = "600-200-300", IsActive = true }
+                new Client { IdClient = 1, Name = "Ekipa Remontowa Alfa", Address = "ul. Murarska 12, Warszawa", PhoneNumber = "500-100-200", IsActive = true },
+                new Client { IdClient = 2, Name = "Dom i Ogród Nowak", Address = "ul. Ogrodowa 5, Kraków", PhoneNumber = "600-200-300", IsActive = true }
             );
 
             // Worker
             modelBuilder.Entity<Worker>().HasData(
-                new Worker { IdWorker = 1, FirstName = "Piotr", LastName = "Kowalczyk", Login = "pkowalczyk", IsActive = true },
-                new Worker { IdWorker = 2, FirstName = "Maria", LastName = "Wiśniewska", Login = "mwisnieska", IsActive = true }
+                new Worker { IdWorker = 1, FirstName = "Tomasz", LastName = "Maj", Login = "tmaj", IsActive = true },
+                new Worker { IdWorker = 2, FirstName = "Karolina", LastName = "Bruk", Login = "kbruk", IsActive = true }
+            );
+
+            modelBuilder.Entity<Supplier>().HasData(
+                new Supplier { IdSupplier = 1, Name = "BudMat Hurt", ContactEmail = "zamowienia@budmat.example", PhoneNumber = "700-100-100", IsActive = true },
+                new Supplier { IdSupplier = 2, Name = "ToolPartner", ContactEmail = "kontakt@toolpartner.example", PhoneNumber = "700-200-200", IsActive = true }
+            );
+
+            modelBuilder.Entity<Brand>().HasData(
+                new Brand { IdBrand = 1, Name = "MajsterMix", Description = "Materiały budowlane do prac remontowych", IsActive = true },
+                new Brand { IdBrand = 2, Name = "ProWiert", Description = "Elektronarzędzia dla ekip wykonawczych", IsActive = true }
+            );
+
+            modelBuilder.Entity<Warehouse>().HasData(
+                new Warehouse { IdWarehouse = 1, Name = "Magazyn główny", Location = "Warszawa - Białołęka", IsActive = true },
+                new Warehouse { IdWarehouse = 2, Name = "Magazyn narzędzi", Location = "Kraków - Nowa Huta", IsActive = true }
             );
 
             // Item
             modelBuilder.Entity<Item>().HasData(
-                new Item { IdItem = 1, Name = "Laptop Dell", Description = "Laptop Dell Inspiron 15", IdCategory = 1, Price = 3500, Quantity = 10, IdUnitOfMeasurement = 1, Code = "LAP001", IsActive = true },
-                new Item { IdItem = 2, Name = "Monitor Samsung", Description = "Monitor 24 cale", IdCategory = 1, Price = 800, Quantity = 15, IdUnitOfMeasurement = 1, Code = "MON001", IsActive = true }
+                new Item { IdItem = 1, Name = "Cement uniwersalny 25 kg", Description = "Cement do prac murarskich i remontowych", IdCategory = 1, Price = 29, Quantity = 120, IdUnitOfMeasurement = 2, IdSupplier = 1, IdBrand = 1, IdWarehouse = 1, Code = "BUD-CEM-25", IsActive = true },
+                new Item { IdItem = 2, Name = "Wiertarka udarowa 850 W", Description = "Wiertarka do betonu, cegły i drewna", IdCategory = 2, Price = 249, Quantity = 18, IdUnitOfMeasurement = 1, IdSupplier = 2, IdBrand = 2, IdWarehouse = 2, Code = "NAR-WIE-850", IsActive = true }
             );
         }
     }

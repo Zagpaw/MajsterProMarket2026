@@ -50,16 +50,16 @@ namespace SolutionOrders.API.Migrations
                         new
                         {
                             IdCategory = 1,
-                            Description = "Urządzenia elektroniczne",
+                            Description = "Cement, zaprawy i elementy konstrukcyjne",
                             IsActive = true,
-                            Name = "Elektronika"
+                            Name = "Materiały budowlane"
                         },
                         new
                         {
                             IdCategory = 2,
-                            Description = "Produkty spożywcze",
+                            Description = "Narzędzia ręczne, elektronarzędzia i akcesoria",
                             IsActive = true,
-                            Name = "Żywność"
+                            Name = "Narzędzia i warsztat"
                         });
                 });
 
@@ -91,17 +91,17 @@ namespace SolutionOrders.API.Migrations
                         new
                         {
                             IdClient = 1,
-                            Address = "ul. Główna 1, Warszawa",
+                            Address = "ul. Murarska 12, Warszawa",
                             IsActive = true,
-                            Name = "Jan Kowalski",
+                            Name = "Ekipa Remontowa Alfa",
                             PhoneNumber = "500-100-200"
                         },
                         new
                         {
                             IdClient = 2,
-                            Address = "ul. Kwiatowa 5, Kraków",
+                            Address = "ul. Ogrodowa 5, Kraków",
                             IsActive = true,
-                            Name = "Anna Nowak",
+                            Name = "Dom i Ogród Nowak",
                             PhoneNumber = "600-200-300"
                         });
                 });
@@ -153,26 +153,26 @@ namespace SolutionOrders.API.Migrations
                         new
                         {
                             IdItem = 1,
-                            Code = "LAP001",
-                            Description = "Laptop Dell Inspiron 15",
+                            Code = "BUD-CEM-25",
+                            Description = "Cement do prac murarskich i remontowych",
                             IdCategory = 1,
-                            IdUnitOfMeasurement = 1,
+                            IdUnitOfMeasurement = 2,
                             IsActive = true,
-                            Name = "Laptop Dell",
-                            Price = 3500m,
-                            Quantity = 10m
+                            Name = "Cement uniwersalny 25 kg",
+                            Price = 29m,
+                            Quantity = 120m
                         },
                         new
                         {
                             IdItem = 2,
-                            Code = "MON001",
-                            Description = "Monitor 24 cale",
-                            IdCategory = 1,
+                            Code = "NAR-WIE-850",
+                            Description = "Wiertarka do betonu, cegły i drewna",
+                            IdCategory = 2,
                             IdUnitOfMeasurement = 1,
                             IsActive = true,
-                            Name = "Monitor Samsung",
-                            Price = 800m,
-                            Quantity = 15m
+                            Name = "Wiertarka udarowa 850 W",
+                            Price = 249m,
+                            Quantity = 18m
                         });
                 });
 
@@ -311,18 +311,18 @@ namespace SolutionOrders.API.Migrations
                         new
                         {
                             IdWorker = 1,
-                            FirstName = "Piotr",
+                            FirstName = "Tomasz",
                             IsActive = true,
-                            LastName = "Kowalczyk",
-                            Login = "pkowalczyk"
+                            LastName = "Maj",
+                            Login = "tmaj"
                         },
                         new
                         {
                             IdWorker = 2,
-                            FirstName = "Maria",
+                            FirstName = "Karolina",
                             IsActive = true,
-                            LastName = "Wiśniewska",
-                            Login = "mwisnieska"
+                            LastName = "Bruk",
+                            Login = "kbruk"
                         });
                 });
 
