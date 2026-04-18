@@ -91,23 +91,13 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
         isActive: true,
       });
 
-      const clients = await apiService.getClients();
-      const client = clients.find(
-        item => item.phoneNumber === phoneNumber && item.password === password
-      );
-
-      onLogin({
-        role: 'client',
-        name,
-        client: client ?? {
-          idClient: 0,
-          name,
-          address,
-          phoneNumber,
-          password,
-          isActive: true,
-        },
-      });
+      Alert.alert('Konto klienta utworzone', 'Mozesz teraz przejsc do logowania.');
+      setLogin(phoneNumber);
+      setPassword('');
+      setName('');
+      setAddress('');
+      setPhoneNumber('');
+      setMode('login');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Nie udalo sie utworzyc konta.';
       Alert.alert('Blad rejestracji', message);
