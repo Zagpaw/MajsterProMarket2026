@@ -385,8 +385,8 @@ function AdminDashboard(): React.JSX.Element {
       <ImageBackground source={heroImage} style={styles.hero} imageStyle={styles.heroImage}>
         <View style={styles.heroOverlay}>
           <Text style={styles.brand}>MajsterPro Market</Text>
-          <Text style={styles.heroText}>Panel sklepu budowlano-remontowego</Text>
-          <Text style={styles.heroSubtext}>CRUD dla 10 tabel, relacje i seeder gotowe do prezentacji.</Text>
+          <Text style={styles.heroText}>Sklep budowlano-remontowy</Text>
+          <Text style={styles.heroSubtext}>Zarzadzaj produktami, zamowieniami, dostawami i magazynem.</Text>
         </View>
       </ImageBackground>
 
