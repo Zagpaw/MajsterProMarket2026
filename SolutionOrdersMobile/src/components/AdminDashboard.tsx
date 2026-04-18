@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
   Image,
   ImageBackground,
   Pressable,
@@ -361,12 +360,13 @@ function AdminDashboard(): React.JSX.Element {
     }
   };
 
-  const renderRecord = ({ item }: { item: RecordData }) => {
+  const renderRecord = (item: RecordData, index: number) => {
     const isSelected = selectedRecord?.[activeConfig.idKey] === item[activeConfig.idKey];
     const image = activeConfig.image ?? materialImage;
 
     return (
       <Pressable
+        key={String(item[activeConfig.idKey] ?? index)}
         style={[styles.recordCard, isSelected && styles.recordCardSelected]}
         onPress={() => selectRecord(item)}
       >
@@ -381,7 +381,7 @@ function AdminDashboard(): React.JSX.Element {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.pageContent}>
       <ImageBackground source={heroImage} style={styles.hero} imageStyle={styles.heroImage}>
         <View style={styles.heroOverlay}>
           <Text style={styles.brand}>MajsterPro Market</Text>
@@ -390,12 +390,7 @@ function AdminDashboard(): React.JSX.Element {
         </View>
       </ImageBackground>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.tabs}
-        contentContainerStyle={styles.tabsContent}
-      >
+      <View style={styles.tabs}>
         {entityConfigs.map(config => (
           <Pressable
             key={config.key}
@@ -407,7 +402,7 @@ function AdminDashboard(): React.JSX.Element {
             </Text>
           </Pressable>
         ))}
-      </ScrollView>
+      </View>
 
       <View style={styles.content}>
         <View style={styles.formPanel}>
@@ -492,18 +487,16 @@ function AdminDashboard(): React.JSX.Element {
               <ActivityIndicator color="#1f6f43" />
               <Text style={styles.loadingText}>Ladowanie danych...</Text>
             </View>
+          ) : records.length === 0 ? (
+            <Text style={styles.empty}>Brak rekordow.</Text>
           ) : (
-            <FlatList
-              data={records}
-              renderItem={renderRecord}
-              keyExtractor={(item, index) => String(item[activeConfig.idKey] ?? index)}
-              contentContainerStyle={styles.recordsList}
-              ListEmptyComponent={<Text style={styles.empty}>Brak rekordow.</Text>}
-            />
+            <View style={styles.recordsList}>
+              {records.map(renderRecord)}
+            </View>
           )}
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -511,6 +504,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f4f6f1',
+  },
+  pageContent: {
+    paddingBottom: 28,
   },
   hero: {
     minHeight: 190,
@@ -543,17 +539,17 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   tabs: {
-    maxHeight: 64,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: '#dce4d8',
-  },
-  tabsContent: {
     paddingHorizontal: 12,
     paddingVertical: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   tab: {
+    minWidth: 92,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#cdd8c8',
@@ -573,7 +569,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   content: {
-    flex: 1,
     padding: 14,
     gap: 14,
   },
@@ -585,7 +580,6 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   listPanel: {
-    flex: 1,
     backgroundColor: '#ffffff',
     borderRadius: 8,
     borderWidth: 1,
