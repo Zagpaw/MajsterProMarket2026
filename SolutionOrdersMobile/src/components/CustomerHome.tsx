@@ -36,6 +36,7 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Odbior');
   const [cardNumber, setCardNumber] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Wszystko');
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -185,34 +186,46 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
         <Text style={styles.catalogIntroText}>Przegladaj produkty wedlug kategorii i dodawaj je do koszyka.</Text>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoryScroller}
+      <Pressable
+        style={styles.categoryMenuButton}
+        onPress={() => setCategoryMenuOpen(current => !current)}
       >
-        {categoryOptions.map(category => {
-          const count =
-            category === 'Wszystko'
-              ? items.length
-              : items.filter(item => (item.categoryName ?? 'Inne') === category).length;
-          const isActive = selectedCategory === category;
+        <View style={styles.categoryMenuTextBox}>
+          <Text style={styles.categoryMenuLabel}>Kategorie</Text>
+          <Text style={styles.categoryMenuValue}>{selectedCategory}</Text>
+        </View>
+        <Text style={styles.categoryMenuIcon}>{categoryMenuOpen ? 'x' : 'menu'}</Text>
+      </Pressable>
 
-          return (
-            <Pressable
-              key={category}
-              style={[styles.categoryChip, isActive && styles.categoryChipActive]}
-              onPress={() => setSelectedCategory(category)}
-            >
-              <Text style={[styles.categoryChipText, isActive && styles.categoryChipTextActive]}>
-                {category}
-              </Text>
-              <Text style={[styles.categoryChipCount, isActive && styles.categoryChipCountActive]}>
-                {count} prod.
-              </Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+      {categoryMenuOpen && (
+        <View style={styles.categoryMenu}>
+          {categoryOptions.map(category => {
+            const count =
+              category === 'Wszystko'
+                ? items.length
+                : items.filter(item => (item.categoryName ?? 'Inne') === category).length;
+            const isActive = selectedCategory === category;
+
+            return (
+              <Pressable
+                key={category}
+                style={[styles.categoryMenuItem, isActive && styles.categoryMenuItemActive]}
+                onPress={() => {
+                  setSelectedCategory(category);
+                  setCategoryMenuOpen(false);
+                }}
+              >
+                <Text style={[styles.categoryMenuItemText, isActive && styles.categoryMenuItemTextActive]}>
+                  {category}
+                </Text>
+                <Text style={[styles.categoryMenuItemCount, isActive && styles.categoryMenuItemCountActive]}>
+                  {count} prod.
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      )}
 
       <View style={styles.catalogSummary}>
         <Text style={styles.catalogSummaryText}>
@@ -546,12 +559,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     marginTop: 4,
   },
-  categoryScroller: {
-    gap: 10,
-    paddingRight: 16,
-  },
-  categoryChip: {
-    minWidth: 132,
+  categoryMenuButton: {
     minHeight: 58,
     borderRadius: 8,
     borderWidth: 1,
@@ -559,27 +567,69 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     paddingHorizontal: 12,
     paddingVertical: 9,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
   },
-  categoryChipActive: {
+  categoryMenuTextBox: {
+    flex: 1,
+  },
+  categoryMenuLabel: {
+    color: '#1f6f43',
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  categoryMenuValue: {
+    color: '#1e2a22',
+    fontSize: 16,
+    fontWeight: '900',
+    marginTop: 3,
+  },
+  categoryMenuIcon: {
+    minWidth: 48,
+    color: '#ffffff',
     backgroundColor: '#1f6f43',
-    borderColor: '#1f6f43',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    textAlign: 'center',
+    fontWeight: '900',
   },
-  categoryChipText: {
+  categoryMenu: {
+    borderWidth: 1,
+    borderColor: '#d6dfd2',
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    overflow: 'hidden',
+  },
+  categoryMenuItem: {
+    minHeight: 52,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#edf2ea',
+  },
+  categoryMenuItemActive: {
+    backgroundColor: '#1f6f43',
+  },
+  categoryMenuItemText: {
     color: '#26342b',
     fontWeight: '900',
-    fontSize: 13,
+    fontSize: 14,
   },
-  categoryChipTextActive: {
+  categoryMenuItemTextActive: {
     color: '#ffffff',
   },
-  categoryChipCount: {
+  categoryMenuItemCount: {
     color: '#6f7f72',
     fontSize: 12,
     fontWeight: '700',
     marginTop: 4,
   },
-  categoryChipCountActive: {
+  categoryMenuItemCountActive: {
     color: '#eff7ec',
   },
   catalogSummary: {
