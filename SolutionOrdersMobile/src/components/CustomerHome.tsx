@@ -28,6 +28,28 @@ type PaymentMethod = 'Odbior' | 'Karta';
 
 const heroImage = require('../assets/images/sklep.jpg');
 
+const normalizeCardNumber = (value: string): string => value.replace(/\D/g, '');
+
+const formatCardNumber = (value: string): string =>
+  normalizeCardNumber(value)
+    .slice(0, 16)
+    .replace(/(.{4})/g, '$1 ')
+    .trim();
+
+const validateCardNumber = (value: string): string => {
+  const digits = normalizeCardNumber(value);
+
+  if (!digits) {
+    return 'Pole Numer karty testowej nie jest wypełnione. Wpisz 16 cyfr.';
+  }
+
+  if (digits.length !== 16) {
+    return `Numer karty testowej musi mieć dokładnie 16 cyfr. Teraz wpisano: ${digits.length}.`;
+  }
+
+  return '';
+};
+
 function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<CustomerTab>('catalog');
   const [items, setItems] = useState<Item[]>([]);
@@ -129,11 +151,13 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
       return;
     }
 
-    if (paymentMethod === 'Karta' && cardNumber.replace(/\s/g, '').length < 12) {
-      const message = 'Pole Numer karty testowej nie jest wypełnione poprawnie. Wpisz numer karty.';
+    if (paymentMethod === 'Karta') {
+      const message = validateCardNumber(cardNumber);
+      if (message) {
       setPaymentError(message);
       Alert.alert('Dane karty', message);
       return;
+      }
     }
 
     const paymentStatus = paymentMethod === 'Karta' ? 'Oplacone' : 'Platnosc przy odbiorze';
@@ -326,9 +350,10 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
                 placeholder="1111 2222 3333 4444"
                 placeholderTextColor="#7b877d"
                 onChangeText={text => {
-                  setCardNumber(text);
+                  setCardNumber(formatCardNumber(text));
                   setPaymentError('');
                 }}
+                maxLength={19}
               />
               {paymentError ? <Text style={styles.fieldError}>{paymentError}</Text> : null}
             </>
