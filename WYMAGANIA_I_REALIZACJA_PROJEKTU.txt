@@ -1,0 +1,226 @@
+MAJSTERPRO MARKET 2026
+Wymagania projektu i zrealizowane elementy
+
+Temat projektu:
+Aplikacja mobilna sklepu budowlano-remontowego MajsterPro Market.
+Projekt zawiera aplikacje mobilna React Native oraz backend ASP.NET Core Web API z baza SQL Server.
+
+
+1. CRUD DLA 10 KLAS / TABEL
+
+Wymaganie nauczyciela:
+Obsluzony w pelni CRUD (Create, Read, Update, Delete) dla 10 klas/tabel.
+
+Status:
+SPELNIONE.
+
+Zrealizowane tabele / klasy:
+1. UnitOfMeasurement - jednostki miary
+2. Category - kategorie produktow
+3. Client - klienci
+4. Worker - pracownicy / administratorzy
+5. Supplier - dostawcy
+6. Brand - marki
+7. Warehouse - magazyny
+8. Item - produkty
+9. Order - zamowienia
+10. OrderItem - pozycje zamowien
+
+CRUD jest dostepny w API przez endpointy:
+- /api/UnitOfMeasurement
+- /api/Category
+- /api/Client
+- /api/Worker
+- /api/Supplier
+- /api/Brand
+- /api/Warehouse
+- /api/Item
+- /api/Order
+- /api/OrderItem
+
+CRUD jest tez obslugiwany w aplikacji mobilnej w panelu administratora.
+
+
+2. RELACJE 1 DO WIELU
+
+Wymaganie nauczyciela:
+Przynajmniej 2-3 relacje 1 do wielu.
+
+Status:
+SPELNIONE.
+
+Zrealizowane relacje 1 do wielu:
+- Category -> wiele Item
+- UnitOfMeasurement -> wiele Item
+- Supplier -> wiele Item
+- Brand -> wiele Item
+- Warehouse -> wiele Item
+- Client -> wiele Order
+- Worker -> wiele Order
+- Order -> wiele OrderItem
+
+
+3. RELACJA WIELE DO WIELU
+
+Wymaganie nauczyciela:
+Przynajmniej jedna relacja wiele do wiele, np. zamowienie - produkt przez tabele laczaca.
+
+Status:
+SPELNIONE.
+
+Zrealizowana relacja:
+Order <-> Item przez tabele laczaca OrderItem.
+
+Opis:
+Jedno zamowienie moze miec wiele produktow.
+Jeden produkt moze wystapic w wielu zamowieniach.
+Tabela OrderItem przechowuje pozycje zamowien.
+
+
+4. TECHNOLOGIA
+
+Wymaganie nauczyciela:
+Mozliwe technologie, np. React Native + WebAPI .NET.
+
+Status:
+SPELNIONE.
+
+Zastosowane technologie:
+- React Native - aplikacja mobilna
+- ASP.NET Core Web API - backend
+- Entity Framework Core - obsluga bazy danych
+- SQL Server - baza danych
+- Docker Compose - uruchomienie API i bazy
+- Swagger / OpenAPI - testowanie endpointow API
+
+
+5. DOCKER I SEEDER
+
+Wymaganie nauczyciela:
+Mile widziane Docker + seeder w DbContext do API.
+
+Status:
+SPELNIONE.
+
+Zrealizowane:
+- docker-compose-api.yml uruchamia API oraz SQL Server
+- migracje EF Core tworza strukture bazy danych
+- seeder w ApplicationDbContext dodaje dane startowe
+
+Dane startowe obejmuja m.in.:
+- jednostki miary
+- kategorie
+- klientow
+- pracownikow
+- dostawcow
+- marki
+- magazyny
+- 10 produktow w katalogu
+
+Konto administratora:
+login: pawel
+haslo: haslo.123
+
+
+6. FRONTEND I JAKOSC APLIKACJI
+
+Wymaganie nauczyciela:
+Brana pod uwage jest czystosc kodu i jakosc frontendu.
+
+Status:
+SPELNIONE.
+
+Zrealizowane w aplikacji mobilnej:
+- ekran logowania
+- rejestracja klienta
+- logowanie administratora
+- logowanie klienta loginem albo numerem telefonu
+- panel administratora
+- CRUD dla 10 tabel w panelu administratora
+- listy rozwijane dla kluczy obcych, np. kategoria, marka, dostawca, magazyn
+- walidacja formularzy
+- katalog produktow dla klienta
+- filtrowanie katalogu po kategoriach
+- koszyk
+- skladanie zamowien
+- platnosc przy odbiorze
+- fikcyjna platnosc karta
+- walidacja numeru karty: dokladnie 16 cyfr
+- podglad zamowien klienta
+- zdjecia i poprawiony wyglad aplikacji
+
+
+7. SWAGGER DO PREZENTACJI API
+
+Swagger jest dostepny pod adresem:
+http://localhost:5000/swagger
+
+W Swaggerze mozna pokazac:
+- GET - pobieranie danych
+- POST - dodawanie danych
+- PUT - edycja danych
+- DELETE - usuwanie danych
+
+
+8. URUCHOMIENIE PROJEKTU
+
+Uruchomienie API i bazy przez Docker:
+docker compose -f docker-compose-api.yml up --build
+
+Adres API:
+http://localhost:5000
+
+Swagger:
+http://localhost:5000/swagger
+
+Uruchomienie aplikacji mobilnej:
+cd SolutionOrdersMobile
+npm install
+adb reverse tcp:5000 tcp:5000
+adb reverse tcp:8081 tcp:8081
+npm start -- --reset-cache
+
+W drugim terminalu:
+cd SolutionOrdersMobile
+npm run android
+
+
+9. CO JEST EXTRA PONAD WYMAGANIA
+
+Dodatkowe elementy:
+- konto administratora
+- rejestracja klienta
+- logowanie klienta
+- koszyk zakupowy
+- skladanie zamowien z aplikacji mobilnej
+- platnosc przy odbiorze
+- fikcyjna platnosc karta
+- walidacja numeru karty
+- filtrowanie katalogu produktow po kategoriach
+- listy rozwijane zamiast recznego wpisywania ID
+- walidacja pustych pol formularzy
+- Swagger UI
+- README z instrukcja uruchomienia
+- Docker Compose
+- zdjecia w aplikacji
+- repozytorium GitHub
+
+
+10. REPOZYTORIUM GITHUB
+
+Projekt znajduje sie w repozytorium:
+https://github.com/Zagpaw/MajsterProMarket2026
+
+
+PODSUMOWANIE
+
+Projekt spelnia wymagania nauczyciela:
+- CRUD dla 10 tabel
+- relacje 1 do wielu
+- relacja wiele do wiele
+- React Native + Web API .NET
+- Docker
+- seeder w DbContext
+- aplikacja mobilna gotowa do prezentacji
+
+Projekt zawiera tez dodatkowe funkcje, ktore poprawiaja wyglad i uzytecznosc aplikacji.
