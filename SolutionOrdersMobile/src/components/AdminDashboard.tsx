@@ -188,8 +188,8 @@ const entityConfigs: EntityConfig[] = [
     image: shopImage,
     fields: [
       { key: 'name', label: 'Nazwa', type: 'text', required: true },
-      { key: 'contactEmail', label: 'Email', type: 'text' },
-      { key: 'phoneNumber', label: 'Telefon', type: 'text' },
+      { key: 'contactEmail', label: 'Email', type: 'text', required: true },
+      { key: 'phoneNumber', label: 'Telefon', type: 'text', required: true },
       { key: 'isActive', label: 'Aktywny', type: 'boolean' },
     ],
   },
@@ -229,11 +229,12 @@ const entityConfigs: EntityConfig[] = [
     labelKey: 'notes',
     descriptionKey: 'deliveryDate',
     fields: [
-      { key: 'dataOrder', label: 'Data zamowienia', type: 'date' },
+      { key: 'dataOrder', label: 'Data zamowienia', type: 'date', required: true },
       {
         key: 'idClient',
         label: 'Klient',
         type: 'number',
+        required: true,
         lookupEndpoint: '/Client',
         lookupIdKey: 'idClient',
         lookupLabelKey: 'name',
@@ -283,7 +284,7 @@ const entityConfigs: EntityConfig[] = [
         lookupLabelKey: 'name',
         lookupDescriptionKey: 'code',
       },
-      { key: 'quantity', label: 'Ilosc', type: 'number' },
+      { key: 'quantity', label: 'Ilosc', type: 'number', required: true },
       { key: 'isActive', label: 'Aktywna', type: 'boolean' },
     ],
   },
@@ -378,6 +379,48 @@ const validateForm = (config: EntityConfig, form: FormState): FormErrors => {
 
     if (password && password.length < 6) {
       errors.password = 'Pole Haslo musi mieć przynajmniej 6 znaków.';
+    }
+  }
+
+  if (config.key === 'suppliers') {
+    const email = String(form.contactEmail ?? '').trim();
+    const phoneDigits = String(form.phoneNumber ?? '').replace(/\D/g, '');
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.contactEmail = 'Pole Email musi mieć poprawny adres email.';
+    }
+
+    if (phoneDigits && (phoneDigits.length < 9 || phoneDigits.length > 15)) {
+      errors.phoneNumber = 'Pole Telefon musi mieć od 9 do 15 cyfr.';
+    }
+  }
+
+  if (config.key === 'items') {
+    const price = Number(String(form.price ?? '').replace(',', '.'));
+    const quantity = Number(String(form.quantity ?? '').replace(',', '.'));
+
+    if (String(form.price ?? '').trim() && price < 0) {
+      errors.price = 'Pole Cena nie może być mniejsze niż 0.';
+    }
+
+    if (String(form.quantity ?? '').trim() && quantity < 0) {
+      errors.quantity = 'Pole Ilosc nie może być mniejsza niż 0.';
+    }
+  }
+
+  if (config.key === 'orderItems') {
+    const quantity = Number(String(form.quantity ?? '').replace(',', '.'));
+
+    if (String(form.quantity ?? '').trim() && quantity <= 0) {
+      errors.quantity = 'Pole Ilosc musi być większa od 0.';
+    }
+  }
+
+  if (config.key === 'orders') {
+    const totalAmount = Number(String(form.totalAmount ?? '').replace(',', '.'));
+
+    if (String(form.totalAmount ?? '').trim() && totalAmount < 0) {
+      errors.totalAmount = 'Pole Kwota razem nie może być mniejsze niż 0.';
     }
   }
 
