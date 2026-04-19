@@ -191,7 +191,15 @@ namespace SolutionOrders.API.Models.Data
             // Item
             modelBuilder.Entity<Item>().HasData(
                 new Item { IdItem = 1, Name = "Cement uniwersalny 25 kg", Description = "Cement do prac murarskich i remontowych", IdCategory = 1, Price = 29, Quantity = 120, IdUnitOfMeasurement = 2, IdSupplier = 1, IdBrand = 1, IdWarehouse = 1, Code = "BUD-CEM-25", IsActive = true },
-                new Item { IdItem = 2, Name = "Wiertarka udarowa 850 W", Description = "Wiertarka do betonu, cegły i drewna", IdCategory = 2, Price = 249, Quantity = 18, IdUnitOfMeasurement = 1, IdSupplier = 2, IdBrand = 2, IdWarehouse = 2, Code = "NAR-WIE-850", IsActive = true }
+                new Item { IdItem = 2, Name = "Wiertarka udarowa 850 W", Description = "Wiertarka do betonu, cegły i drewna", IdCategory = 2, Price = 249, Quantity = 18, IdUnitOfMeasurement = 1, IdSupplier = 2, IdBrand = 2, IdWarehouse = 2, Code = "NAR-WIE-850", IsActive = true },
+                new Item { IdItem = 3, Name = "Farba biała lateksowa 10 l", Description = "Matowa farba do ścian i sufitów", IdCategory = 1, Price = 119, Quantity = 42, IdUnitOfMeasurement = 3, IdSupplier = 1, IdBrand = 1, IdWarehouse = 1, Code = "BUD-FAR-10", IsActive = true },
+                new Item { IdItem = 4, Name = "Panel podłogowy dąb naturalny", Description = "Panel laminowany AC4 do salonu i korytarza", IdCategory = 1, Price = 46, Quantity = 260, IdUnitOfMeasurement = 1, IdSupplier = 1, IdBrand = 1, IdWarehouse = 1, Code = "BUD-PAN-DAB", IsActive = true },
+                new Item { IdItem = 5, Name = "Drzwi wewnętrzne białe 80 cm", Description = "Proste drzwi pokojowe z ościeżnicą", IdCategory = 1, Price = 399, Quantity = 14, IdUnitOfMeasurement = 1, IdSupplier = 1, IdBrand = 1, IdWarehouse = 1, Code = "BUD-DRZ-80", IsActive = true },
+                new Item { IdItem = 6, Name = "Płytki gresowe szare 60x60", Description = "Gres do łazienki, kuchni i przedpokoju", IdCategory = 1, Price = 79, Quantity = 180, IdUnitOfMeasurement = 1, IdSupplier = 1, IdBrand = 1, IdWarehouse = 1, Code = "BUD-GRE-6060", IsActive = true },
+                new Item { IdItem = 7, Name = "Klej do płytek elastyczny 25 kg", Description = "Klej do gresu i glazury, do wnętrz i na zewnątrz", IdCategory = 1, Price = 54, Quantity = 95, IdUnitOfMeasurement = 2, IdSupplier = 1, IdBrand = 1, IdWarehouse = 1, Code = "BUD-KLE-25", IsActive = true },
+                new Item { IdItem = 8, Name = "Młotowiertarka SDS Plus", Description = "Młotowiertarka do cięższych prac remontowych", IdCategory = 2, Price = 469, Quantity = 9, IdUnitOfMeasurement = 1, IdSupplier = 2, IdBrand = 2, IdWarehouse = 2, Code = "NAR-SDS-PLUS", IsActive = true },
+                new Item { IdItem = 9, Name = "Zestaw wkrętaków 12 elementów", Description = "Wkrętaki płaskie i krzyżakowe do warsztatu", IdCategory = 2, Price = 69, Quantity = 35, IdUnitOfMeasurement = 1, IdSupplier = 2, IdBrand = 2, IdWarehouse = 2, Code = "NAR-WKR-12", IsActive = true },
+                new Item { IdItem = 10, Name = "Taśma miernicza 5 m", Description = "Miarka zwijana z blokadą do pomiarów budowlanych", IdCategory = 2, Price = 24, Quantity = 60, IdUnitOfMeasurement = 1, IdSupplier = 2, IdBrand = 2, IdWarehouse = 2, Code = "NAR-TAS-5M", IsActive = true }
             );
         }
     }
