@@ -54,10 +54,12 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
       }
 
       const clients = await apiService.getClients();
+      const normalizedLogin = login.trim().toLowerCase();
       const client = clients.find(
         (item: Client) =>
           item.isActive &&
-          item.phoneNumber === login.trim() &&
+          (item.phoneNumber === login.trim() ||
+            item.name?.trim().toLowerCase() === normalizedLogin) &&
           item.password === password
       );
 
@@ -140,12 +142,12 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
           <>
             <Text style={styles.title}>Zaloguj sie</Text>
 
-            <Text style={styles.label}>Login admina albo telefon klienta</Text>
+            <Text style={styles.label}>Login albo numer telefonu</Text>
             <TextInput
               style={styles.input}
               value={login}
               autoCapitalize="none"
-              placeholder="pawel albo numer telefonu"
+              placeholder="Login lub telefon"
               placeholderTextColor="#7b877d"
               onChangeText={setLogin}
             />
@@ -168,11 +170,12 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
           <>
             <Text style={styles.title}>Utworz konto klienta</Text>
 
-            <Text style={styles.label}>Imie i nazwisko albo nazwa firmy</Text>
+            <Text style={styles.label}>Login klienta albo nazwa firmy</Text>
             <TextInput
               style={styles.input}
               value={name}
-              placeholder="Jan Kowalski"
+              autoCapitalize="none"
+              placeholder="anna albo Firma Budowlana"
               placeholderTextColor="#7b877d"
               onChangeText={setName}
             />
