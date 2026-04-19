@@ -1,4 +1,6 @@
-﻿namespace SolutionOrders.API.Models
+using System.Text.Json.Serialization;
+
+namespace SolutionOrders.API.Models
 {
     public class OrderItem
     {
@@ -8,8 +10,10 @@
         public decimal? Quantity { get; set; }
         public bool IsActive { get; set; }
 
-        // Navigation properties
-        public virtual Order Order { get; set; } = null!;
-        public virtual Item Item { get; set; } = null!;
+        [JsonIgnore]
+        public virtual Order? Order { get; set; }
+
+        [JsonIgnore]
+        public virtual Item? Item { get; set; }
     }
 }
