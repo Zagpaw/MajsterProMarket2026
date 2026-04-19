@@ -35,6 +35,7 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
   const [cart, setCart] = useState<Record<number, CartLine>>({});
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Odbior');
   const [cardNumber, setCardNumber] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Wszystko');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +44,21 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
   const cartTotal = useMemo(
     () => cartLines.reduce((sum, line) => sum + (line.item.price ?? 0) * line.quantity, 0),
     [cartLines]
+  );
+  const categoryOptions = useMemo(() => {
+    const categories = items
+      .map(item => item.categoryName ?? 'Inne')
+      .filter((category, index, array) => array.indexOf(category) === index)
+      .sort((a, b) => a.localeCompare(b));
+
+    return ['Wszystko', ...categories];
+  }, [items]);
+  const filteredItems = useMemo(
+    () =>
+      selectedCategory === 'Wszystko'
+        ? items
+        : items.filter(item => (item.categoryName ?? 'Inne') === selectedCategory),
+    [items, selectedCategory]
   );
 
   const loadData = useCallback(async () => {
@@ -164,7 +180,50 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
         </Pressable>
       </View>
 
-      {items.map(item => (
+      <View style={styles.catalogIntro}>
+        <Text style={styles.catalogIntroTitle}>Wybierz dzial</Text>
+        <Text style={styles.catalogIntroText}>Przegladaj produkty wedlug kategorii i dodawaj je do koszyka.</Text>
+      </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.categoryScroller}
+      >
+        {categoryOptions.map(category => {
+          const count =
+            category === 'Wszystko'
+              ? items.length
+              : items.filter(item => (item.categoryName ?? 'Inne') === category).length;
+          const isActive = selectedCategory === category;
+
+          return (
+            <Pressable
+              key={category}
+              style={[styles.categoryChip, isActive && styles.categoryChipActive]}
+              onPress={() => setSelectedCategory(category)}
+            >
+              <Text style={[styles.categoryChipText, isActive && styles.categoryChipTextActive]}>
+                {category}
+              </Text>
+              <Text style={[styles.categoryChipCount, isActive && styles.categoryChipCountActive]}>
+                {count} prod.
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
+      <View style={styles.catalogSummary}>
+        <Text style={styles.catalogSummaryText}>
+          {selectedCategory === 'Wszystko' ? 'Wszystkie produkty' : selectedCategory}
+        </Text>
+        <Text style={styles.catalogSummaryCount}>{filteredItems.length} pozycji</Text>
+      </View>
+
+      {filteredItems.length === 0 ? (
+        <Text style={styles.empty}>Brak produktow w tej kategorii.</Text>
+      ) : filteredItems.map(item => (
         <View key={item.idItem} style={styles.productCard}>
           <View style={styles.productHeader}>
             <Text style={styles.category}>{item.categoryName ?? 'Sklep budowlany'}</Text>
@@ -469,6 +528,78 @@ const styles = StyleSheet.create({
   smallButtonText: {
     color: '#26342b',
     fontWeight: '900',
+  },
+  catalogIntro: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#dce4d8',
+    padding: 14,
+  },
+  catalogIntroTitle: {
+    color: '#1e2a22',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  catalogIntroText: {
+    color: '#566359',
+    lineHeight: 19,
+    marginTop: 4,
+  },
+  categoryScroller: {
+    gap: 10,
+    paddingRight: 16,
+  },
+  categoryChip: {
+    minWidth: 132,
+    minHeight: 58,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#d6dfd2',
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    justifyContent: 'center',
+  },
+  categoryChipActive: {
+    backgroundColor: '#1f6f43',
+    borderColor: '#1f6f43',
+  },
+  categoryChipText: {
+    color: '#26342b',
+    fontWeight: '900',
+    fontSize: 13,
+  },
+  categoryChipTextActive: {
+    color: '#ffffff',
+  },
+  categoryChipCount: {
+    color: '#6f7f72',
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 4,
+  },
+  categoryChipCountActive: {
+    color: '#eff7ec',
+  },
+  catalogSummary: {
+    backgroundColor: '#e8f2e5',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  catalogSummaryText: {
+    flex: 1,
+    color: '#1f6f43',
+    fontWeight: '900',
+  },
+  catalogSummaryCount: {
+    color: '#26342b',
+    fontWeight: '800',
   },
   productCard: {
     backgroundColor: '#ffffff',
