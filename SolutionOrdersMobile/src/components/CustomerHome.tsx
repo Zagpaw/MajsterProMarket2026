@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  ImageBackground,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -24,6 +25,8 @@ type CartLine = {
 
 type CustomerTab = 'catalog' | 'cart' | 'orders';
 type PaymentMethod = 'Odbior' | 'Karta';
+
+const heroImage = require('../assets/images/sklep.jpg');
 
 function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<CustomerTab>('catalog');
@@ -292,15 +295,20 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerText}>
-          <Text style={styles.title}>Witaj, {client.name ?? 'Kliencie'}</Text>
-          <Text style={styles.subtitle}>Wybierz materialy, sprawdz koszyk i zloz zamowienie.</Text>
+      <ImageBackground source={heroImage} style={styles.hero} imageStyle={styles.heroImage}>
+        <View style={styles.heroOverlay}>
+          <View style={styles.headerRow}>
+            <View style={styles.headerText}>
+              <Text style={styles.title}>Witaj, {client.name ?? 'Kliencie'}</Text>
+              <Text style={styles.heroText}>MajsterPro Market</Text>
+              <Text style={styles.subtitle}>Wybierz materialy, sprawdz koszyk i zloz zamowienie.</Text>
+            </View>
+            <Pressable style={styles.logoutButton} onPress={onLogout}>
+              <Text style={styles.logoutText}>Wyloguj</Text>
+            </Pressable>
+          </View>
         </View>
-        <Pressable style={styles.logoutButton} onPress={onLogout}>
-          <Text style={styles.logoutText}>Wyloguj</Text>
-        </Pressable>
-      </View>
+      </ImageBackground>
 
       <View style={styles.tabs}>
         <Pressable
@@ -348,11 +356,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f4f6f1',
   },
-  header: {
-    backgroundColor: '#1f6f43',
-    padding: 16,
+  hero: {
+    minHeight: 170,
+    justifyContent: 'flex-end',
+  },
+  heroImage: {
+    resizeMode: 'cover',
+  },
+  heroOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(21, 54, 35, 0.72)',
+    paddingHorizontal: 16,
+    paddingTop: 34,
+    paddingBottom: 18,
     borderBottomWidth: 4,
     borderBottomColor: '#f4c430',
+  },
+  headerRow: {
     flexDirection: 'row',
     gap: 12,
     alignItems: 'center',
@@ -364,6 +385,12 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 21,
     fontWeight: '900',
+  },
+  heroText: {
+    color: '#f4c430',
+    fontSize: 16,
+    fontWeight: '900',
+    marginTop: 4,
   },
   subtitle: {
     color: '#eff7ec',
