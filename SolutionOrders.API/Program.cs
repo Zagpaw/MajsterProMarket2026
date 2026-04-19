@@ -88,13 +88,14 @@ namespace SolutionOrders.API
                     logger.LogError(ex, "Błąd podczas migracji bazy danych");
                     throw;
                 }
-                app.UseCors("AllowAll"); 
-                app.MapOpenApi();
-                app.UseSwaggerUI(options =>
-                {
-                    options.SwaggerEndpoint("/openapi/v1.json", "v1");
-                });
             }
+
+            app.UseCors("AllowAll");
+            app.MapOpenApi();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/openapi/v1.json", "v1");
+            });
         }
     }
 }
