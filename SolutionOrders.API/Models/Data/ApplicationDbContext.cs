@@ -109,6 +109,7 @@ namespace SolutionOrders.API.Models.Data
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.HasKey(e => e.IdOrder);
+                entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
 
                 entity.HasOne(e => e.Client)
                     .WithMany(c => c.Orders)

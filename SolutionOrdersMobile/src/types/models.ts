@@ -108,6 +108,10 @@ export interface Order {
   idWorker: number | null;
   notes: string | null;
   deliveryDate: string | null;
+  paymentMethod: string | null;
+  paymentStatus: string | null;
+  totalAmount: number | null;
+  orderItems?: OrderItem[];
 }
 
 // Pozycja zamowienia
@@ -117,4 +121,5 @@ export interface OrderItem {
   idItem: number;
   quantity: number | null;
   isActive: boolean;
+  item?: Item;
 }

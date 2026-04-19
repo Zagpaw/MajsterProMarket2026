@@ -67,6 +67,9 @@ namespace SolutionOrders.API.Controllers
             existingOrder.IdWorker = order.IdWorker;
             existingOrder.Notes = order.Notes;
             existingOrder.DeliveryDate = order.DeliveryDate;
+            existingOrder.PaymentMethod = order.PaymentMethod;
+            existingOrder.PaymentStatus = order.PaymentStatus;
+            existingOrder.TotalAmount = order.TotalAmount;
 
             await context.SaveChangesAsync(cancellationToken);
             return NoContent();

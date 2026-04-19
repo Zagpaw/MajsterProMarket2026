@@ -11,6 +11,8 @@ import type {
   Item,
   CreateItemRequest,
   UpdateItemRequest,
+  Order,
+  OrderItem,
 } from '../types/models';
 
 class ApiService {
@@ -330,6 +332,26 @@ class ApiService {
   async deleteWarehouse(id: number): Promise<void> {
     return this.request<void>(`/Warehouse/${id}`, {
       method: 'DELETE',
+    });
+  }
+
+  // ========== ZAMOWIENIA ==========
+
+  async getOrders(): Promise<Order[]> {
+    return this.request<Order[]>('/Order');
+  }
+
+  async createOrder(data: Partial<Order>): Promise<Order> {
+    return this.request<Order>('/Order', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async createOrderItem(data: Partial<OrderItem>): Promise<OrderItem> {
+    return this.request<OrderItem>('/OrderItem', {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
   }
 }

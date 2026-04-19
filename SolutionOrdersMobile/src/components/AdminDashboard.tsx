@@ -179,6 +179,9 @@ const entityConfigs: EntityConfig[] = [
       { key: 'idWorker', label: 'ID pracownika', type: 'number' },
       { key: 'notes', label: 'Notatki', type: 'text' },
       { key: 'deliveryDate', label: 'Data dostawy', type: 'date' },
+      { key: 'paymentMethod', label: 'Metoda platnosci', type: 'text' },
+      { key: 'paymentStatus', label: 'Status platnosci', type: 'text' },
+      { key: 'totalAmount', label: 'Kwota razem', type: 'number' },
     ],
   },
   {
