@@ -20,6 +20,10 @@ type CrudField = {
   label: string;
   type: FieldType;
   required?: boolean;
+  lookupEndpoint?: string;
+  lookupIdKey?: string;
+  lookupLabelKey?: string;
+  lookupDescriptionKey?: string;
 };
 
 type EntityConfig = {
@@ -35,6 +39,11 @@ type EntityConfig = {
 
 type RecordData = Record<string, unknown>;
 type FormState = Record<string, string>;
+type LookupOption = {
+  id: string;
+  label: string;
+  description?: string;
+};
 
 const heroImage = require('../assets/images/hero-budomat.jpg');
 const shopImage = require('../assets/images/sklep.jpg');
@@ -54,13 +63,54 @@ const entityConfigs: EntityConfig[] = [
     fields: [
       { key: 'name', label: 'Nazwa', type: 'text', required: true },
       { key: 'description', label: 'Opis', type: 'text' },
-      { key: 'idCategory', label: 'ID kategorii', type: 'number', required: true },
+      {
+        key: 'idCategory',
+        label: 'Kategoria',
+        type: 'number',
+        required: true,
+        lookupEndpoint: '/Category',
+        lookupIdKey: 'idCategory',
+        lookupLabelKey: 'name',
+        lookupDescriptionKey: 'description',
+      },
       { key: 'price', label: 'Cena', type: 'number' },
       { key: 'quantity', label: 'Ilosc', type: 'number' },
-      { key: 'idUnitOfMeasurement', label: 'ID jednostki', type: 'number' },
-      { key: 'idSupplier', label: 'ID dostawcy', type: 'number' },
-      { key: 'idBrand', label: 'ID marki', type: 'number' },
-      { key: 'idWarehouse', label: 'ID magazynu', type: 'number' },
+      {
+        key: 'idUnitOfMeasurement',
+        label: 'Jednostka',
+        type: 'number',
+        lookupEndpoint: '/UnitOfMeasurement',
+        lookupIdKey: 'idUnitOfMeasurement',
+        lookupLabelKey: 'name',
+        lookupDescriptionKey: 'description',
+      },
+      {
+        key: 'idSupplier',
+        label: 'Dostawca',
+        type: 'number',
+        lookupEndpoint: '/Supplier',
+        lookupIdKey: 'idSupplier',
+        lookupLabelKey: 'name',
+        lookupDescriptionKey: 'contactEmail',
+      },
+      {
+        key: 'idBrand',
+        label: 'Marka',
+        type: 'number',
+        lookupEndpoint: '/Brand',
+        lookupIdKey: 'idBrand',
+        lookupLabelKey: 'name',
+        lookupDescriptionKey: 'description',
+      },
+      {
+        key: 'idWarehouse',
+        label: 'Magazyn',
+        type: 'number',
+        lookupEndpoint: '/Warehouse',
+        lookupIdKey: 'idWarehouse',
+        lookupLabelKey: 'name',
+        lookupDescriptionKey: 'location',
+      },
       { key: 'code', label: 'Kod', type: 'text' },
       { key: 'isActive', label: 'Aktywny', type: 'boolean' },
     ],
@@ -175,8 +225,24 @@ const entityConfigs: EntityConfig[] = [
     descriptionKey: 'deliveryDate',
     fields: [
       { key: 'dataOrder', label: 'Data zamowienia', type: 'date' },
-      { key: 'idClient', label: 'ID klienta', type: 'number' },
-      { key: 'idWorker', label: 'ID pracownika', type: 'number' },
+      {
+        key: 'idClient',
+        label: 'Klient',
+        type: 'number',
+        lookupEndpoint: '/Client',
+        lookupIdKey: 'idClient',
+        lookupLabelKey: 'name',
+        lookupDescriptionKey: 'phoneNumber',
+      },
+      {
+        key: 'idWorker',
+        label: 'Pracownik',
+        type: 'number',
+        lookupEndpoint: '/Worker',
+        lookupIdKey: 'idWorker',
+        lookupLabelKey: 'login',
+        lookupDescriptionKey: 'lastName',
+      },
       { key: 'notes', label: 'Notatki', type: 'text' },
       { key: 'deliveryDate', label: 'Data dostawy', type: 'date' },
       { key: 'paymentMethod', label: 'Metoda platnosci', type: 'text' },
@@ -192,8 +258,26 @@ const entityConfigs: EntityConfig[] = [
     labelKey: 'idItem',
     descriptionKey: 'quantity',
     fields: [
-      { key: 'idOrder', label: 'ID zamowienia', type: 'number', required: true },
-      { key: 'idItem', label: 'ID produktu', type: 'number', required: true },
+      {
+        key: 'idOrder',
+        label: 'Zamowienie',
+        type: 'number',
+        required: true,
+        lookupEndpoint: '/Order',
+        lookupIdKey: 'idOrder',
+        lookupLabelKey: 'notes',
+        lookupDescriptionKey: 'paymentStatus',
+      },
+      {
+        key: 'idItem',
+        label: 'Produkt',
+        type: 'number',
+        required: true,
+        lookupEndpoint: '/Item',
+        lookupIdKey: 'idItem',
+        lookupLabelKey: 'name',
+        lookupDescriptionKey: 'code',
+      },
       { key: 'quantity', label: 'Ilosc', type: 'number' },
       { key: 'isActive', label: 'Aktywna', type: 'boolean' },
     ],
@@ -271,6 +355,33 @@ const getRecordDescription = (config: EntityConfig, record: RecordData): string 
     : `ID: ${String(record[config.idKey] ?? '-')}`;
 };
 
+const getLookupFields = (config: EntityConfig): CrudField[] =>
+  config.fields.filter(field => field.lookupEndpoint);
+
+const mapLookupOptions = (field: CrudField, data: RecordData[]): LookupOption[] => {
+  const idKey = field.lookupIdKey ?? field.key;
+  const labelKey = field.lookupLabelKey ?? 'name';
+  const descriptionKey = field.lookupDescriptionKey;
+
+  return data.map(item => {
+    const id = String(item[idKey] ?? '');
+    const labelValue = item[labelKey];
+    const descriptionValue = descriptionKey ? item[descriptionKey] : undefined;
+
+    return {
+      id,
+      label:
+        labelValue !== undefined && labelValue !== null && String(labelValue).trim() !== ''
+          ? String(labelValue)
+          : `${field.label} #${id}`,
+      description:
+        descriptionValue !== undefined && descriptionValue !== null
+          ? String(descriptionValue)
+          : undefined,
+    };
+  });
+};
+
 function AdminDashboard(): React.JSX.Element {
   const [activeKey, setActiveKey] = useState(entityConfigs[0].key);
   const [records, setRecords] = useState<RecordData[]>([]);
@@ -279,6 +390,8 @@ function AdminDashboard(): React.JSX.Element {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lookups, setLookups] = useState<Record<string, LookupOption[]>>({});
+  const [openLookupKey, setOpenLookupKey] = useState<string | null>(null);
 
   const activeConfig = useMemo(
     () => entityConfigs.find(config => config.key === activeKey) ?? entityConfigs[0],
@@ -299,11 +412,36 @@ function AdminDashboard(): React.JSX.Element {
     }
   }, [activeConfig]);
 
+  const loadLookups = useCallback(async (config: EntityConfig) => {
+    const lookupFields = getLookupFields(config);
+
+    if (lookupFields.length === 0) {
+      setLookups({});
+      return;
+    }
+
+    try {
+      const results = await Promise.all(
+        lookupFields.map(async field => {
+          const data = await apiService.getEntityList<RecordData>(field.lookupEndpoint ?? '');
+          return [field.key, mapLookupOptions(field, data)] as const;
+        })
+      );
+
+      setLookups(Object.fromEntries(results));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Nie udalo sie pobrac list wyboru';
+      setError(message);
+    }
+  }, []);
+
   useEffect(() => {
     setSelectedRecord(undefined);
     setForm(createInitialForm(activeConfig));
+    setOpenLookupKey(null);
     loadRecords(activeConfig);
-  }, [activeConfig, loadRecords]);
+    loadLookups(activeConfig);
+  }, [activeConfig, loadRecords, loadLookups]);
 
   const selectRecord = (record: RecordData) => {
     setSelectedRecord(record);
@@ -313,6 +451,7 @@ function AdminDashboard(): React.JSX.Element {
   const resetForm = () => {
     setSelectedRecord(undefined);
     setForm(createInitialForm(activeConfig));
+    setOpenLookupKey(null);
   };
 
   const saveRecord = async () => {
@@ -363,6 +502,74 @@ function AdminDashboard(): React.JSX.Element {
     } finally {
       setSaving(false);
     }
+  };
+
+  const renderLookupField = (field: CrudField, value: string) => {
+    const options = lookups[field.key] ?? [];
+    const selectedOption = options.find(option => option.id === value);
+    const isOpen = openLookupKey === field.key;
+
+    return (
+      <View key={field.key} style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>{field.label}</Text>
+        <Pressable
+          style={styles.selectInput}
+          onPress={() => setOpenLookupKey(current => (current === field.key ? null : field.key))}
+        >
+          <View style={styles.selectTextBox}>
+            <Text style={[styles.selectText, !selectedOption && styles.selectPlaceholder]}>
+              {selectedOption ? selectedOption.label : `Wybierz: ${field.label}`}
+            </Text>
+            {selectedOption?.description ? (
+              <Text style={styles.selectDescription}>{selectedOption.description}</Text>
+            ) : null}
+          </View>
+          <Text style={styles.selectArrow}>{isOpen ? '^' : 'v'}</Text>
+        </Pressable>
+
+        {isOpen && (
+          <View style={styles.selectMenu}>
+            {!field.required && (
+              <Pressable
+                style={styles.selectOption}
+                onPress={() => {
+                  setForm(current => ({ ...current, [field.key]: '' }));
+                  setOpenLookupKey(null);
+                }}
+              >
+                <Text style={styles.selectOptionText}>Brak</Text>
+              </Pressable>
+            )}
+
+            {options.length === 0 ? (
+              <Text style={styles.selectEmpty}>Brak danych do wyboru.</Text>
+            ) : (
+              options.map(option => (
+                <Pressable
+                  key={`${field.key}-${option.id}`}
+                  style={[
+                    styles.selectOption,
+                    option.id === value && styles.selectOptionActive,
+                  ]}
+                  onPress={() => {
+                    setForm(current => ({ ...current, [field.key]: option.id }));
+                    setOpenLookupKey(null);
+                  }}
+                >
+                  <Text style={styles.selectOptionText}>
+                    {option.label}
+                  </Text>
+                  {option.description ? (
+                    <Text style={styles.selectOptionDescription}>{option.description}</Text>
+                  ) : null}
+                  <Text style={styles.selectOptionId}>ID: {option.id}</Text>
+                </Pressable>
+              ))
+            )}
+          </View>
+        )}
+      </View>
+    );
   };
 
   const renderRecord = (item: RecordData, index: number) => {
@@ -439,6 +646,10 @@ function AdminDashboard(): React.JSX.Element {
                   <Text style={styles.booleanValue}>{value === 'true' ? 'Tak' : 'Nie'}</Text>
                 </Pressable>
               );
+            }
+
+            if (field.lookupEndpoint) {
+              return renderLookupField(field, value);
             }
 
             return (
@@ -628,6 +839,78 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     color: '#1e2a22',
     backgroundColor: '#f9fbf7',
+  },
+  selectInput: {
+    minHeight: 48,
+    borderWidth: 1,
+    borderColor: '#cdd8c8',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    backgroundColor: '#f9fbf7',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  selectTextBox: {
+    flex: 1,
+  },
+  selectText: {
+    color: '#1e2a22',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  selectPlaceholder: {
+    color: '#7b877d',
+    fontWeight: '600',
+  },
+  selectDescription: {
+    color: '#566359',
+    fontSize: 12,
+    marginTop: 3,
+  },
+  selectArrow: {
+    color: '#1f6f43',
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  selectMenu: {
+    borderWidth: 1,
+    borderColor: '#cdd8c8',
+    borderRadius: 8,
+    marginTop: 6,
+    backgroundColor: '#ffffff',
+    overflow: 'hidden',
+  },
+  selectOption: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#edf2ea',
+  },
+  selectOptionActive: {
+    backgroundColor: '#f0f8ec',
+  },
+  selectOptionText: {
+    color: '#1e2a22',
+    fontWeight: '800',
+  },
+  selectOptionDescription: {
+    color: '#566359',
+    fontSize: 12,
+    marginTop: 2,
+  },
+  selectOptionId: {
+    color: '#1f6f43',
+    fontSize: 11,
+    fontWeight: '800',
+    marginTop: 3,
+  },
+  selectEmpty: {
+    color: '#566359',
+    padding: 12,
+    textAlign: 'center',
   },
   booleanInput: {
     minHeight: 48,
