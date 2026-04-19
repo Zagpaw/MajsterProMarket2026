@@ -39,6 +39,7 @@ type EntityConfig = {
 
 type RecordData = Record<string, unknown>;
 type FormState = Record<string, string>;
+type FormErrors = Record<string, string>;
 type LookupOption = {
   id: string;
   label: string;
@@ -79,6 +80,7 @@ const entityConfigs: EntityConfig[] = [
         key: 'idUnitOfMeasurement',
         label: 'Jednostka',
         type: 'number',
+        required: true,
         lookupEndpoint: '/UnitOfMeasurement',
         lookupIdKey: 'idUnitOfMeasurement',
         lookupLabelKey: 'name',
@@ -88,6 +90,7 @@ const entityConfigs: EntityConfig[] = [
         key: 'idSupplier',
         label: 'Dostawca',
         type: 'number',
+        required: true,
         lookupEndpoint: '/Supplier',
         lookupIdKey: 'idSupplier',
         lookupLabelKey: 'name',
@@ -97,6 +100,7 @@ const entityConfigs: EntityConfig[] = [
         key: 'idBrand',
         label: 'Marka',
         type: 'number',
+        required: true,
         lookupEndpoint: '/Brand',
         lookupIdKey: 'idBrand',
         lookupLabelKey: 'name',
@@ -106,6 +110,7 @@ const entityConfigs: EntityConfig[] = [
         key: 'idWarehouse',
         label: 'Magazyn',
         type: 'number',
+        required: true,
         lookupEndpoint: '/Warehouse',
         lookupIdKey: 'idWarehouse',
         lookupLabelKey: 'name',
@@ -335,6 +340,32 @@ const buildPayload = (
   return payload;
 };
 
+const validateForm = (config: EntityConfig, form: FormState): FormErrors => {
+  const errors: FormErrors = {};
+
+  config.fields.forEach(field => {
+    const value = String(form[field.key] ?? '').trim();
+
+    if (field.required && !value) {
+      errors[field.key] = field.lookupEndpoint
+        ? `Pole ${field.label} nie jest wybrane. Wybierz wartość z listy.`
+        : `Pole ${field.label} nie jest wypełnione. Uzupełnij to pole.`;
+      return;
+    }
+
+    if (field.type === 'number' && value && Number.isNaN(Number(value.replace(',', '.')))) {
+      errors[field.key] = `Pole ${field.label} musi być poprawną liczbą.`;
+      return;
+    }
+
+    if (field.type === 'date' && value && Number.isNaN(Date.parse(value))) {
+      errors[field.key] = `Pole ${field.label} musi mieć poprawną datę.`;
+    }
+  });
+
+  return errors;
+};
+
 const getRecordTitle = (config: EntityConfig, record: RecordData): string => {
   const value = record[config.labelKey];
   if (value !== undefined && value !== null && String(value).trim() !== '') {
@@ -390,6 +421,7 @@ function AdminDashboard(): React.JSX.Element {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [lookups, setLookups] = useState<Record<string, LookupOption[]>>({});
   const [openLookupKey, setOpenLookupKey] = useState<string | null>(null);
 
@@ -438,6 +470,7 @@ function AdminDashboard(): React.JSX.Element {
   useEffect(() => {
     setSelectedRecord(undefined);
     setForm(createInitialForm(activeConfig));
+    setFormErrors({});
     setOpenLookupKey(null);
     loadRecords(activeConfig);
     loadLookups(activeConfig);
@@ -446,21 +479,23 @@ function AdminDashboard(): React.JSX.Element {
   const selectRecord = (record: RecordData) => {
     setSelectedRecord(record);
     setForm(createInitialForm(activeConfig, record));
+    setFormErrors({});
   };
 
   const resetForm = () => {
     setSelectedRecord(undefined);
     setForm(createInitialForm(activeConfig));
+    setFormErrors({});
     setOpenLookupKey(null);
   };
 
   const saveRecord = async () => {
-    const missingField = activeConfig.fields.find(
-      field => field.required && !String(form[field.key] ?? '').trim()
-    );
+    const validationErrors = validateForm(activeConfig, form);
+    setFormErrors(validationErrors);
 
-    if (missingField) {
-      Alert.alert('Brak danych', `Uzupelnij pole: ${missingField.label}`);
+    const firstError = Object.values(validationErrors)[0];
+    if (firstError) {
+      Alert.alert('Brak danych', firstError);
       return;
     }
 
@@ -513,7 +548,7 @@ function AdminDashboard(): React.JSX.Element {
       <View key={field.key} style={styles.inputGroup}>
         <Text style={styles.inputLabel}>{field.label}</Text>
         <Pressable
-          style={styles.selectInput}
+          style={[styles.selectInput, formErrors[field.key] && styles.inputInvalid]}
           onPress={() => setOpenLookupKey(current => (current === field.key ? null : field.key))}
         >
           <View style={styles.selectTextBox}>
@@ -534,6 +569,7 @@ function AdminDashboard(): React.JSX.Element {
                 style={styles.selectOption}
                 onPress={() => {
                   setForm(current => ({ ...current, [field.key]: '' }));
+                  setFormErrors(current => ({ ...current, [field.key]: '' }));
                   setOpenLookupKey(null);
                 }}
               >
@@ -553,6 +589,7 @@ function AdminDashboard(): React.JSX.Element {
                   ]}
                   onPress={() => {
                     setForm(current => ({ ...current, [field.key]: option.id }));
+                    setFormErrors(current => ({ ...current, [field.key]: '' }));
                     setOpenLookupKey(null);
                   }}
                 >
@@ -568,6 +605,10 @@ function AdminDashboard(): React.JSX.Element {
             )}
           </View>
         )}
+
+        {formErrors[field.key] ? (
+          <Text style={styles.fieldError}>{formErrors[field.key]}</Text>
+        ) : null}
       </View>
     );
   };
@@ -656,18 +697,22 @@ function AdminDashboard(): React.JSX.Element {
               <View key={field.key} style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>{field.label}</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, formErrors[field.key] && styles.inputInvalid]}
                   value={value}
                   keyboardType={field.type === 'number' ? 'numeric' : 'default'}
                   placeholder={field.type === 'date' ? '2026-04-18T10:00:00' : field.label}
                   placeholderTextColor="#7b877d"
-                  onChangeText={text =>
+                  onChangeText={text => {
                     setForm(current => ({
                       ...current,
                       [field.key]: text,
-                    }))
-                  }
+                    }));
+                    setFormErrors(current => ({ ...current, [field.key]: '' }));
+                  }}
                 />
+                {formErrors[field.key] ? (
+                  <Text style={styles.fieldError}>{formErrors[field.key]}</Text>
+                ) : null}
               </View>
             );
           })}
@@ -839,6 +884,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     color: '#1e2a22',
     backgroundColor: '#f9fbf7',
+  },
+  inputInvalid: {
+    borderColor: '#992f1f',
+    backgroundColor: '#fff8f6',
+  },
+  fieldError: {
+    color: '#992f1f',
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 5,
+    lineHeight: 17,
   },
   selectInput: {
     minHeight: 48,

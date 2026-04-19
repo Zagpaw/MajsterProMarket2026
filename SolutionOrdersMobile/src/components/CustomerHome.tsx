@@ -37,6 +37,7 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
   const [cardNumber, setCardNumber] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Wszystko');
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -129,7 +130,9 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
     }
 
     if (paymentMethod === 'Karta' && cardNumber.replace(/\s/g, '').length < 12) {
-      Alert.alert('Dane karty', 'Wpisz numer karty testowej.');
+      const message = 'Pole Numer karty testowej nie jest wypełnione poprawnie. Wpisz numer karty.';
+      setPaymentError(message);
+      Alert.alert('Dane karty', message);
       return;
     }
 
@@ -161,6 +164,7 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
 
       setCart({});
       setCardNumber('');
+      setPaymentError('');
       await loadData();
       setActiveTab('orders');
       Alert.alert('Zamowienie zlozone', `Status platnosci: ${paymentStatus}`);
@@ -321,8 +325,12 @@ function CustomerHome({ client, onLogout }: CustomerHomeProps): React.JSX.Elemen
                 keyboardType="numeric"
                 placeholder="1111 2222 3333 4444"
                 placeholderTextColor="#7b877d"
-                onChangeText={setCardNumber}
+                onChangeText={text => {
+                  setCardNumber(text);
+                  setPaymentError('');
+                }}
               />
+              {paymentError ? <Text style={styles.fieldError}>{paymentError}</Text> : null}
             </>
           )}
 
@@ -822,6 +830,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     color: '#1e2a22',
     backgroundColor: '#ffffff',
+  },
+  fieldError: {
+    color: '#992f1f',
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 5,
+    lineHeight: 17,
   },
   submitButton: {
     backgroundColor: '#1f6f43',

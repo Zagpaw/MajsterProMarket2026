@@ -21,6 +21,8 @@ type AuthScreenProps = {
   onLogin: (session: Session) => void;
 };
 
+type AuthErrors = Record<string, string>;
+
 const heroImage = require('../assets/images/hero-budomat.jpg');
 
 function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
@@ -31,10 +33,52 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<AuthErrors>({});
+
+  const setField = (key: string, value: string, setter: (text: string) => void) => {
+    setter(value);
+    setErrors(current => ({ ...current, [key]: '' }));
+  };
+
+  const validateLogin = (): AuthErrors => {
+    const nextErrors: AuthErrors = {};
+
+    if (!login.trim()) {
+      nextErrors.login = 'Pole Login albo numer telefonu nie jest wypełnione.';
+    }
+
+    if (!password.trim()) {
+      nextErrors.password = 'Pole Hasło nie jest wypełnione.';
+    }
+
+    return nextErrors;
+  };
+
+  const validateRegister = (): AuthErrors => {
+    const nextErrors: AuthErrors = {};
+
+    if (!name.trim()) {
+      nextErrors.name = 'Pole Login klienta albo nazwa firmy nie jest wypełnione.';
+    }
+
+    if (!phoneNumber.trim()) {
+      nextErrors.phoneNumber = 'Pole Telefon nie jest wypełnione.';
+    }
+
+    if (!password.trim()) {
+      nextErrors.password = 'Pole Hasło nie jest wypełnione.';
+    }
+
+    return nextErrors;
+  };
 
   const signIn = async () => {
-    if (!login.trim() || !password.trim()) {
-      Alert.alert('Brak danych', 'Wpisz login i haslo.');
+    const validationErrors = validateLogin();
+    setErrors(validationErrors);
+
+    const firstError = Object.values(validationErrors)[0];
+    if (firstError) {
+      Alert.alert('Brak danych', firstError);
       return;
     }
 
@@ -78,8 +122,12 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
   };
 
   const register = async () => {
-    if (!name.trim() || !phoneNumber.trim() || !password.trim()) {
-      Alert.alert('Brak danych', 'Wpisz imie/nazwe, telefon i haslo.');
+    const validationErrors = validateRegister();
+    setErrors(validationErrors);
+
+    const firstError = Object.values(validationErrors)[0];
+    if (firstError) {
+      Alert.alert('Brak danych', firstError);
       return;
     }
 
@@ -99,6 +147,7 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
       setName('');
       setAddress('');
       setPhoneNumber('');
+      setErrors({});
       setMode('login');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Nie udalo sie utworzyc konta.';
@@ -144,23 +193,25 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
 
             <Text style={styles.label}>Login albo numer telefonu</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, errors.login && styles.inputInvalid]}
               value={login}
               autoCapitalize="none"
               placeholder="Login lub telefon"
               placeholderTextColor="#7b877d"
-              onChangeText={setLogin}
+              onChangeText={text => setField('login', text, setLogin)}
             />
+            {errors.login ? <Text style={styles.fieldError}>{errors.login}</Text> : null}
 
             <Text style={styles.label}>Haslo</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, errors.password && styles.inputInvalid]}
               value={password}
               secureTextEntry
               placeholder="Haslo"
               placeholderTextColor="#7b877d"
-              onChangeText={setPassword}
+              onChangeText={text => setField('password', text, setPassword)}
             />
+            {errors.password ? <Text style={styles.fieldError}>{errors.password}</Text> : null}
 
             <Pressable style={styles.primaryButton} onPress={signIn} disabled={loading}>
               {loading ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.primaryText}>Zaloguj</Text>}
@@ -172,17 +223,18 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
 
             <Text style={styles.label}>Login klienta albo nazwa firmy</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, errors.name && styles.inputInvalid]}
               value={name}
               autoCapitalize="none"
               placeholder="anna albo Firma Budowlana"
               placeholderTextColor="#7b877d"
-              onChangeText={setName}
+              onChangeText={text => setField('name', text, setName)}
             />
+            {errors.name ? <Text style={styles.fieldError}>{errors.name}</Text> : null}
 
             <Text style={styles.label}>Adres</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, errors.phoneNumber && styles.inputInvalid]}
               value={address}
               placeholder="ul. Remontowa 1"
               placeholderTextColor="#7b877d"
@@ -196,8 +248,9 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
               keyboardType="phone-pad"
               placeholder="500123456"
               placeholderTextColor="#7b877d"
-              onChangeText={setPhoneNumber}
+              onChangeText={text => setField('phoneNumber', text, setPhoneNumber)}
             />
+            {errors.phoneNumber ? <Text style={styles.fieldError}>{errors.phoneNumber}</Text> : null}
 
             <Text style={styles.label}>Haslo</Text>
             <TextInput
@@ -206,8 +259,9 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
               secureTextEntry
               placeholder="Haslo"
               placeholderTextColor="#7b877d"
-              onChangeText={setPassword}
+              onChangeText={text => setField('password', text, setPassword)}
             />
+            {errors.password ? <Text style={styles.fieldError}>{errors.password}</Text> : null}
 
             <Pressable style={styles.primaryButton} onPress={register} disabled={loading}>
               {loading ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.primaryText}>Utworz konto</Text>}
@@ -314,6 +368,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     color: '#1e2a22',
     backgroundColor: '#f9fbf7',
+  },
+  inputInvalid: {
+    borderColor: '#992f1f',
+    backgroundColor: '#fff8f6',
+  },
+  fieldError: {
+    color: '#992f1f',
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 5,
+    lineHeight: 17,
   },
   primaryButton: {
     minHeight: 48,
