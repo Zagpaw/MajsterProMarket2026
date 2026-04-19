@@ -619,7 +619,7 @@ function AdminDashboard(): React.JSX.Element {
 
     return (
       <Pressable
-        key={String(item[activeConfig.idKey] ?? index)}
+        key={`${activeConfig.key}-${String(item[activeConfig.idKey] ?? 'new')}-${index}`}
         style={[styles.recordCard, isSelected && styles.recordCardSelected]}
         onPress={() => selectRecord(item)}
       >
