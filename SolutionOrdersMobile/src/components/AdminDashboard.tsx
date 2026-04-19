@@ -157,9 +157,9 @@ const entityConfigs: EntityConfig[] = [
     image: panelsImage,
     fields: [
       { key: 'name', label: 'Nazwa', type: 'text', required: true },
-      { key: 'address', label: 'Adres', type: 'text' },
-      { key: 'phoneNumber', label: 'Telefon', type: 'text' },
-      { key: 'password', label: 'Haslo', type: 'text' },
+      { key: 'address', label: 'Adres', type: 'text', required: true },
+      { key: 'phoneNumber', label: 'Telefon', type: 'text', required: true },
+      { key: 'password', label: 'Haslo', type: 'text', required: true },
       { key: 'isActive', label: 'Aktywny', type: 'boolean' },
     ],
   },
@@ -362,6 +362,24 @@ const validateForm = (config: EntityConfig, form: FormState): FormErrors => {
       errors[field.key] = `Pole ${field.label} musi mieć poprawną datę.`;
     }
   });
+
+  if (config.key === 'clients') {
+    const clientName = String(form.name ?? '').trim();
+    const phoneDigits = String(form.phoneNumber ?? '').replace(/\D/g, '');
+    const password = String(form.password ?? '');
+
+    if (clientName && clientName.length < 2) {
+      errors.name = 'Pole Nazwa musi mieć przynajmniej 2 znaki.';
+    }
+
+    if (phoneDigits && (phoneDigits.length < 9 || phoneDigits.length > 15)) {
+      errors.phoneNumber = 'Pole Telefon musi mieć od 9 do 15 cyfr.';
+    }
+
+    if (password && password.length < 6) {
+      errors.password = 'Pole Haslo musi mieć przynajmniej 6 znaków.';
+    }
+  }
 
   return errors;
 };
