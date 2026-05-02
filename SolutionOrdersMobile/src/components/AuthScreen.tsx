@@ -26,12 +26,14 @@ type AuthErrors = Record<string, string>;
 const heroImage = require('../assets/images/hero-budomat.jpg');
 
 function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [mode, setMode] = useState<'login' | 'register' | 'reset'>('login');
   const [login, setLogin] = useState('pawel');
   const [password, setPassword] = useState('haslo.123');
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [resetPhoneNumber, setResetPhoneNumber] = useState('');
+  const [resetPassword, setResetPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<AuthErrors>({});
 
@@ -67,6 +69,25 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
 
     if (!password.trim()) {
       nextErrors.password = 'Pole Hasło nie jest wypełnione.';
+    }
+
+    return nextErrors;
+  };
+
+  const validateReset = (): AuthErrors => {
+    const nextErrors: AuthErrors = {};
+    const phoneDigits = resetPhoneNumber.replace(/\D/g, '');
+
+    if (!phoneDigits) {
+      nextErrors.resetPhoneNumber = 'Pole Telefon nie jest wypełnione.';
+    } else if (phoneDigits.length < 9 || phoneDigits.length > 15) {
+      nextErrors.resetPhoneNumber = 'Pole Telefon musi mieć od 9 do 15 cyfr.';
+    }
+
+    if (!resetPassword.trim()) {
+      nextErrors.resetPassword = 'Pole Nowe haslo nie jest wypełnione.';
+    } else if (resetPassword.trim().length < 6) {
+      nextErrors.resetPassword = 'Pole Nowe haslo musi mieć przynajmniej 6 znakow.';
     }
 
     return nextErrors;
@@ -157,6 +178,51 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
     }
   };
 
+  const resetClientPassword = async () => {
+    const validationErrors = validateReset();
+    setErrors(validationErrors);
+
+    const firstError = Object.values(validationErrors)[0];
+    if (firstError) {
+      Alert.alert('Brak danych', firstError);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const clients = await apiService.getClients();
+      const normalizedPhone = resetPhoneNumber.replace(/\D/g, '');
+      const client = clients.find(
+        (item: Client) =>
+          item.isActive &&
+          item.phoneNumber?.replace(/\D/g, '') === normalizedPhone
+      );
+
+      if (!client) {
+        Alert.alert('Brak klienta', 'Nie znaleziono klienta z takim numerem telefonu.');
+        return;
+      }
+
+      await apiService.updateClient(client.idClient, {
+        ...client,
+        password: resetPassword.trim(),
+      });
+
+      Alert.alert('Haslo zmienione', 'Mozesz teraz zalogowac sie nowym haslem.');
+      setLogin(client.phoneNumber ?? '');
+      setPassword('');
+      setResetPhoneNumber('');
+      setResetPassword('');
+      setErrors({});
+      setMode('login');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Nie udalo sie zresetowac hasla.';
+      Alert.alert('Blad resetu hasla', message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <ImageBackground source={heroImage} style={styles.hero} imageStyle={styles.heroImage}>
@@ -182,6 +248,14 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
         >
           <Text style={[styles.modeText, mode === 'register' && styles.modeTextActive]}>
             Rejestracja
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[styles.modeButton, mode === 'reset' && styles.modeButtonActive]}
+          onPress={() => setMode('reset')}
+        >
+          <Text style={[styles.modeText, mode === 'reset' && styles.modeTextActive]}>
+            Reset hasla
           </Text>
         </Pressable>
       </View>
@@ -216,8 +290,12 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
             <Pressable style={styles.primaryButton} onPress={signIn} disabled={loading}>
               {loading ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.primaryText}>Zaloguj</Text>}
             </Pressable>
+
+            <Pressable style={styles.linkButton} onPress={() => setMode('reset')}>
+              <Text style={styles.linkText}>Zapomnialem hasla</Text>
+            </Pressable>
           </>
-        ) : (
+        ) : mode === 'register' ? (
           <>
             <Text style={styles.title}>Utworz konto klienta</Text>
 
@@ -267,6 +345,36 @@ function AuthScreen({ onLogin }: AuthScreenProps): React.JSX.Element {
               {loading ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.primaryText}>Utworz konto</Text>}
             </Pressable>
           </>
+        ) : (
+          <>
+            <Text style={styles.title}>Reset hasla klienta</Text>
+
+            <Text style={styles.label}>Numer telefonu</Text>
+            <TextInput
+              style={[styles.input, errors.resetPhoneNumber && styles.inputInvalid]}
+              value={resetPhoneNumber}
+              keyboardType="phone-pad"
+              placeholder="500123456"
+              placeholderTextColor="#7b877d"
+              onChangeText={text => setField('resetPhoneNumber', text, setResetPhoneNumber)}
+            />
+            {errors.resetPhoneNumber ? <Text style={styles.fieldError}>{errors.resetPhoneNumber}</Text> : null}
+
+            <Text style={styles.label}>Nowe haslo</Text>
+            <TextInput
+              style={[styles.input, errors.resetPassword && styles.inputInvalid]}
+              value={resetPassword}
+              secureTextEntry
+              placeholder="Nowe haslo"
+              placeholderTextColor="#7b877d"
+              onChangeText={text => setField('resetPassword', text, setResetPassword)}
+            />
+            {errors.resetPassword ? <Text style={styles.fieldError}>{errors.resetPassword}</Text> : null}
+
+            <Pressable style={styles.primaryButton} onPress={resetClientPassword} disabled={loading}>
+              {loading ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.primaryText}>Zmien haslo</Text>}
+            </Pressable>
+          </>
         )}
       </View>
     </ScrollView>
@@ -313,9 +421,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     padding: 14,
+    flexWrap: 'wrap',
   },
   modeButton: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: '30%',
     minHeight: 46,
     borderRadius: 8,
     borderWidth: 1,
@@ -391,6 +501,15 @@ const styles = StyleSheet.create({
   primaryText: {
     color: '#ffffff',
     fontWeight: '900',
+  },
+  linkButton: {
+    marginTop: 14,
+    alignSelf: 'center',
+    paddingVertical: 4,
+  },
+  linkText: {
+    color: '#1f6f43',
+    fontWeight: '800',
   },
 });
 
