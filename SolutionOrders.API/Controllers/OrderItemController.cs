@@ -32,10 +32,16 @@ namespace SolutionOrders.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<OrderItem>> Create(OrderItem orderItem, CancellationToken cancellationToken)
+        public async Task<ActionResult<OrderItem>> Create(OrderItemWriteModel request, CancellationToken cancellationToken)
         {
-            orderItem.IdOrderItem = 0;
-            orderItem.IsActive = true;
+            var orderItem = new OrderItem
+            {
+                IdOrderItem = 0,
+                IdOrder = request.IdOrder,
+                IdItem = request.IdItem,
+                Quantity = request.Quantity,
+                IsActive = true,
+            };
 
             context.OrderItems.Add(orderItem);
             await context.SaveChangesAsync(cancellationToken);
@@ -44,23 +50,18 @@ namespace SolutionOrders.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, OrderItem orderItem, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(int id, OrderItemWriteModel request, CancellationToken cancellationToken)
         {
-            if (id != orderItem.IdOrderItem)
-            {
-                return BadRequest(new { message = "ID w URL różni się od ID w body" });
-            }
-
             var existingOrderItem = await context.OrderItems.FindAsync([id], cancellationToken);
             if (existingOrderItem is null || !existingOrderItem.IsActive)
             {
                 return NotFound();
             }
 
-            existingOrderItem.IdOrder = orderItem.IdOrder;
-            existingOrderItem.IdItem = orderItem.IdItem;
-            existingOrderItem.Quantity = orderItem.Quantity;
-            existingOrderItem.IsActive = orderItem.IsActive;
+            existingOrderItem.IdOrder = request.IdOrder;
+            existingOrderItem.IdItem = request.IdItem;
+            existingOrderItem.Quantity = request.Quantity;
+            existingOrderItem.IsActive = request.IsActive;
 
             await context.SaveChangesAsync(cancellationToken);
             return NoContent();
